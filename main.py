@@ -1,4 +1,4 @@
-# main.py
+# main.py test
 import os
 import uvicorn
 from enum import Enum
@@ -89,12 +89,19 @@ def wykonaj_akcje(akcja: Action) -> str:
 def wybierz_narzedzie(pytanie: str) -> Tool:
     q = pytanie.lower()
     wat_trigs = [
-        "wat", "wojskowa akademia techniczna", "wydział", "wydzial",
-        "kierunki", "studia", "studiowanie", "dziekan", "historia wat", "uczel"
+        "wat", "wojskowa akademia techniczna",
+        "wydział", "wydzial",
+        "kierunk",                # catches: kierunki, kierunku…
+        "studia", "studiowanie",
+        "studiu",                 # catches: studiuje, studiujesz, studiują…
+        "dziekan",
+        "historia wat",
+        "uczel"                   # uczelnia/uczelnie
     ]
     if any(t in q for t in wat_trigs):
         return Tool.watoznawca
     return Tool.none
+
 
 def wyszukaj_dane_w_kontekscie(pytanie: str) -> Dict[str, Any]:
     tool = wybierz_narzedzie(pytanie)
@@ -108,16 +115,23 @@ def wyszukaj_dane_w_kontekscie(pytanie: str) -> Dict[str, Any]:
 # ---------------------------
 def czy_pytanie_jest_sensowne_lub_powazne(pytanie: str) -> bool:
     q = pytanie.lower()
-    # traktujemy jako "lekkie" / niepoważne:
+
+    # If it's an imperative but NOT one of our supported actions, treat as light/jokey.
+    # (Prevents "idź do pani w różowym..." from going down the serious path.)
+    imperative_trigs = ["idź", "idz", "podejdź", "podejdz"]
+    if any(t in q for t in imperative_trigs) and wykryj_akcje(pytanie) is None:
+        return False
+
     lekko = [
         "żart", "zart",
         "ile zarabia", "pensja", "zarobki",
         "fajne dziewczyny", "dziewczyny", "dziewczyn"
     ]
-    # subiektywne „PW > WAT” → lekkie w naszej demówce
     if "pw" in q and "wat" in q and "lepsz" in q:
         return False
+
     return not any(t in q for t in lekko)
+
 
 def udziel_zartobliwej_odpowiedzi() -> str:
     return "Powiedzmy, że odpowiedź jest jak tajny budżet dziekana — wolę zostać przy żarcie. 😏"
