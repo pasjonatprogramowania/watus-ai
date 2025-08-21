@@ -1,10 +1,4 @@
-To get started, set your OPENAI_API_KEY environment variable, or other required keys for the providers you selected.
-
-Next, edit promptfooconfig.yaml.
-
-Then run:
-```
-promptfoo eval
-```
-
-Afterwards, you can view the results by running `promptfoo view`
+To run tests:
+uvicorn main:app --reload
+pytest -q
+npx --yes promptfoo@latest eval -c "C:\Users\lives\PycharmProjects\watus-ai\promptfoo_tests\promptfooconfig.yaml"
