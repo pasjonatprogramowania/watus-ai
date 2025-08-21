@@ -6,6 +6,7 @@ from typing import List, Dict, Any, Optional
 
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
+from pydantic_ai import Agent
 
 # ---------------------------
 # FastAPI app + in-memory state
