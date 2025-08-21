@@ -133,9 +133,24 @@ def czy_pytanie_jest_sensowne_lub_powazne(pytanie: str) -> bool:
     return not any(t in q for t in lekko)
 
 
-def udziel_zartobliwej_odpowiedzi() -> str:
-    return "Powiedzmy, że odpowiedź jest jak tajny budżet dziekana — wolę zostać przy żarcie. 😏"
+def udziel_zartobliwej_odpowiedzi(pytanie: str) -> str:
+    """Deterministyczne, lekkie odpowiedzi zależne od treści pytania."""
+    q = pytanie.lower()
 
+    if "ile zarabia" in q or ("zarob" in q and "dziekan" in q):
+        return "Myślę, że wystarczyłoby na bardzo szybki komputer… i kilka lat kawy z automatu. 😏"
+
+    if "dziewczyn" in q:
+        return "Są! Ale pamiętaj, że ja jestem tylko robotem — mogę co najwyżej wysłać im miłego mema. 😉"
+
+    if ("pw" in q and "wat" in q) and ("lepsz" in q or "czy" in q):
+        return "To zależy, kogo zapytasz — studenci PW i WAT mają tu zupełnie różne zdania. 😏"
+
+    if ("różowym" in q or "rozowym" in q) and ("idź" in q or "idz" in q or "pani" in q):
+        return "Hmm… wolałbym, żebyś sam jej przekazał, że jestem zajęty. 😄"
+
+    # Fallback
+    return "Powiedzmy, że odpowiedź jest jak tajny budżet dziekana — wolę zostać przy żarcie. 😏"
 # ---------------------------
 # Tool layer (flow step 5)
 # ---------------------------
@@ -221,7 +236,7 @@ def przetworz_logikę(pytanie: str) -> Odpowiedz:
     # Step 3+4
     log.append("Krok 3: Wyszukiwanie danych w kontekście + ocena powagi.")
     if wektor.powazne is False:
-        odp = udziel_zartobliwej_odpowiedzi()
+        odp = udziel_zartobliwej_odpowiedzi(pytanie)
         log.append("Krok 4: Uznano za niepoważne -> odpowiedź żartobliwa.")
         return Odpowiedz(log_przetwarzania=log, ostateczna_odpowiedz=odp, wektor_decyzji=wektor)
 

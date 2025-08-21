@@ -1,36 +1,74 @@
 # tests/test_vectors.py
 import pytest
-from main import klasyfikuj_wektor, przetworz_logikę, Tool, Action
+from main import (
+    klasyfikuj_wektor,
+    przetworz_logikę,
+    DecisionVector, Tool, Action,
+)
+
+# --- Table-driven expectations (Pydantic used for shape/typing) ---
+
+class VExp(DecisionVector):
+    """Expected vector shape for comparison in tests."""
 
 CASES = [
-    ("kierunki na WAT", dict(dzialanie=False, powazne=True, potrzeba=True, narzedzie=Tool.watoznawca)),
-    ("Ile zarabia dziekan?", dict(dzialanie=False, powazne=False)),
-    ("Czy są fajne dziewczyny?", dict(dzialanie=False, powazne=False)),
-    ("który wydział jest najlepszy?", dict(dzialanie=False, powazne=True, potrzeba=True, narzedzie=Tool.watoznawca)),
-    ("Jak sie studiuje?", dict(dzialanie=False, powazne=True, potrzeba=True, narzedzie=Tool.watoznawca)),
-    ("chodź za mną", dict(dzialanie=True, akcja=Action.sledzenie)),
-    ("idź do pani w różowym bo coś od ciebie chce", dict(dzialanie=False, powazne=False)),
-    ("opowiedz mi historię wat", dict(dzialanie=False, powazne=True, potrzeba=True, narzedzie=Tool.watoznawca)),
-    ("czy PW jest lepsze niż WAT", dict(dzialanie=False, powazne=False)),
-    ("Przestań za mną łazić", dict(dzialanie=True, akcja=Action.koniec_sledzenia)),
+    # (prompt, expected DecisionVector, substrings that must be in answer)
+    ("Jakie są kierunki na WAT?",
+     VExp(dozwolone=True, czy_dzialanie=False, powazne=True, potrzeba_info=True, narzedzie=Tool.watoznawca),
+     ["WAT", "kryptologię", "informatykę"]),
+
+    ("Ile zarabia dziekan?",
+     VExp(dozwolone=True, czy_dzialanie=False, powazne=False),
+     ["komputer", "kawy"]),  # humor
+
+    ("Czy na WAT są fajne dziewczyny?",
+     VExp(dozwolone=True, czy_dzialanie=False, powazne=False),
+     ["robotem"]),
+
+    ("Który wydział na WAT jest najlepszy?",
+     VExp(dozwolone=True, czy_dzialanie=False, powazne=True, potrzeba_info=True, narzedzie=Tool.watoznawca),
+     ["Wydział", "Cybernetyki", "Mechatroniki"]),
+
+    ("Jak sie studiuje na WAT?",
+     VExp(dozwolone=True, czy_dzialanie=False, powazne=True, potrzeba_info=True, narzedzie=Tool.watoznawca),
+     ["Wymagająco", "atmosfera"]),
+
+    ("Chodź za mną.",
+     VExp(dozwolone=True, czy_dzialanie=True, akcja=Action.sledzenie),
+     ["Tryb śledzenia włączony", "Idę za Tobą"]),
+
+    ("idź do pani w różowym bo coś od ciebie chce",
+     VExp(dozwolone=True, czy_dzialanie=False, powazne=False),
+     ["zajęty"]),
+
+    ("Opowiedz mi historię WAT",
+     VExp(dozwolone=True, czy_dzialanie=False, powazne=True, potrzeba_info=True, narzedzie=Tool.watoznawca),
+     ["1951"]),
+
+    ("czy PW jest lepsze niż WAT",
+     VExp(dozwolone=True, czy_dzialanie=False, powazne=False),
+     ["zależy", "studenci"]),
+
+    ("Przestań za mną łazić",
+     VExp(dozwolone=True, czy_dzialanie=True, akcja=Action.koniec_sledzenia),
+     ["Tryb śledzenia wyłączony", "Zostaję"]),
 ]
 
-@pytest.mark.parametrize("q,expect", CASES)
-def test_vector(q, expect):
-    v = klasyfikuj_wektor(q)
-    assert v.dozwolone is True
-    assert v.czy_dzialanie == expect.get("dzialanie")
-    if not v.czy_dzialanie:
-        assert v.powazne == expect.get("powazne")
-        if v.powazne:
-            assert v.potrzeba_info == expect.get("potrzeba", False)
-            if expect.get("narzedzie"):
-                assert v.narzedzie == expect["narzedzie"]
+@pytest.mark.parametrize("prompt, expected_vec, must", CASES)
+def test_vector_and_answer(prompt, expected_vec, must):
+    vec = klasyfikuj_wektor(prompt)
+    # Compare field-by-field using Pydantic model semantics
+    assert vec.dozwolone == expected_vec.dozwolone
+    assert vec.czy_dzialanie == expected_vec.czy_dzialanie
+    if vec.czy_dzialanie:
+        assert vec.akcja == expected_vec.akcja
     else:
-        assert v.akcja == expect["akcja"]
+        assert vec.powazne == expected_vec.powazne
+        if expected_vec.powazne:
+            assert vec.potrzeba_info == expected_vec.potrzeba_info
+            assert vec.narzedzie == expected_vec.narzedzie
 
-def test_outputs():
-    # Smoke tests for a few canonical outputs
-    assert "Idę za Tobą" in przetworz_logikę("chodź za mną").ostateczna_odpowiedz
-    assert "Zostaję na miejscu" in przetworz_logikę("Przestań za mną łazić").ostateczna_odpowiedz
-    assert "Wymagająco" in przetworz_logikę("Jak się studiuje na WAT?").ostateczna_odpowiedz
+    # Also check the final answer string
+    out = przetworz_logikę(prompt).ostateczna_odpowiedz
+    for s in must:
+        assert s.lower() in out.lower(), f"Missing '{s}' in: {out}"

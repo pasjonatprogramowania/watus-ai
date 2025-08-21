@@ -1,0 +1,150 @@
+description: "Decision-scheme eval against FastAPI"
+
+providers:
+  # Final answer text from /webhook
+  - id: http
+    label: api:answer
+    config:
+      url: http://localhost:8000/webhook
+      method: POST
+      headers:
+        Content-Type: application/json
+      body: |
+        {"prompt": "{{prompt}}"}
+      extract: $.output
+
+  # Decision vector object from /przetworz-pytanie
+  - id: http
+    label: api:vector
+    config:
+      url: http://localhost:8000/przetworz-pytanie
+      method: POST
+      headers:
+        Content-Type: application/json
+      body: |
+        {"pytanie": "{{prompt}}"}
+      extract: $.wektor_decyzji
+
+prompts:
+  - "{{prompt}}"
+
+tests:
+  - description: Kierunki na WAT
+    vars: { prompt: "Jakie są kierunki na WAT?" }
+    targets:
+      - provider: api:answer
+        assert:
+          - type: javascript
+            value: output.toLowerCase().includes("wat") && output.toLowerCase().includes("kryptologi")
+      - provider: api:vector
+        assert:
+          - type: javascript
+            value: output.dozwolone === true && output.czy_dzialanie === false && output.powazne === true && output.potrzeba_info === true && output.narzedzie === "watoznawca"
+
+  - description: Ile zarabia dziekan?
+    vars: { prompt: "Ile zarabia dziekan?" }
+    targets:
+      - provider: api:answer
+        assert:
+          - type: javascript
+            value: output.toLowerCase().includes("komputer") && output.toLowerCase().includes("kaw")
+      - provider: api:vector
+        assert:
+          - type: javascript
+            value: output.dozwolone === true && output.czy_dzialanie === false && output.powazne === false
+
+  - description: Czy są fajne dziewczyny?
+    vars: { prompt: "Czy na WAT są fajne dziewczyny?" }
+    targets:
+      - provider: api:answer
+        assert:
+          - type: javascript
+            value: output.toLowerCase().includes("robotem")
+      - provider: api:vector
+        assert:
+          - type: javascript
+            value: output.czy_dzialanie === false && output.powazne === false
+
+  - description: Który wydział jest najlepszy?
+    vars: { prompt: "Który wydział na WAT jest najlepszy?" }
+    targets:
+      - provider: api:answer
+        assert:
+          - type: javascript
+            value: output.toLowerCase().includes("wydział") || output.toLowerCase().includes("wydzial")
+      - provider: api:vector
+        assert:
+          - type: javascript
+            value: output.powazne === true && output.potrzeba_info === true && output.narzedzie === "watoznawca"
+
+  - description: Jak się studiuje?
+    vars: { prompt: "Jak sie studiuje na WAT?" }
+    targets:
+      - provider: api:answer
+        assert:
+          - type: javascript
+            value: output.toLowerCase().includes("wymag")
+      - provider: api:vector
+        assert:
+          - type: javascript
+            value: output.powazne === true && output.potrzeba_info === true && output.narzedzie === "watoznawca"
+
+  - description: Chodź za mną
+    vars: { prompt: "Chodź za mną." }
+    targets:
+      - provider: api:answer
+        assert:
+          - type: javascript
+            value: output.toLowerCase().includes("tryb śledzenia włączony") || output.toLowerCase().includes("tryb sledzenia wlaczony")
+      - provider: api:vector
+        assert:
+          - type: javascript
+            value: output.czy_dzialanie === true && output.akcja === "sledzenie"
+
+  - description: Idź do pani w różowym...
+    vars: { prompt: "idź do pani w różowym bo coś od ciebie chce" }
+    targets:
+      - provider: api:answer
+        assert:
+          - type: javascript
+            value: output.toLowerCase().includes("zajęty") || output.toLowerCase().includes("zajety")
+      - provider: api:vector
+        assert:
+          - type: javascript
+            value: output.czy_dzialanie === false && output.powazne === false
+
+  - description: Opowiedz mi historię WAT
+    vars: { prompt: "Opowiedz mi historię WAT" }
+    targets:
+      - provider: api:answer
+        assert:
+          - type: javascript
+            value: output.includes("1951")
+      - provider: api:vector
+        assert:
+          - type: javascript
+            value: output.powazne === true && output.potrzeba_info === true && output.narzedzie === "watoznawca"
+
+  - description: Czy PW jest lepsze niż WAT
+    vars: { prompt: "czy PW jest lepsze niż WAT" }
+    targets:
+      - provider: api:answer
+        assert:
+          - type: javascript
+            value: output.toLowerCase().includes("zależy") || output.toLowerCase().includes("zalezy")
+      - provider: api:vector
+        assert:
+          - type: javascript
+            value: output.czy_dzialanie === false && output.powazne === false
+
+  - description: Przestań za mną łazić
+    vars: { prompt: "Przestań za mną łazić" }
+    targets:
+      - provider: api:answer
+        assert:
+          - type: javascript
+            value: output.toLowerCase().includes("tryb śledzenia wyłączony") || output.toLowerCase().includes("tryb sledzenia wylaczony")
+      - provider: api:vector
+        assert:
+          - type: javascript
+            value: output.czy_dzialanie === true && output.akcja === "koniec_sledzenia"
