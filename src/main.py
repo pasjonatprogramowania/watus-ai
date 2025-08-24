@@ -12,6 +12,11 @@ from src import CURRENT_MODEL, IS_ALLOWED_SYSTEM_PROMPT, WARNING_SYSTEM_PROMPT, 
 
 from pydantic_ai import Agent
 
+TOOL_REQUIRED = "is_tool_required"
+SERIOUS = "is_serious"
+ACTIONS_REQUIRED = "is_actions_required"
+ALLOWED = "is_allowed"
+
 
 def log_llm_response(user_query: str, agent_name: str, response: str, response_time: float):
     """Loguje odpowiedź LLM z pomiarem czasu."""
@@ -156,18 +161,18 @@ class Answer(BaseModel):
     decisionVector: DecisionVector
 
 
-def optimized_process_question(content: str) -> Answer:
+def process_question(content: str) -> Answer:
     """Główna funkcja przetwarzająca pytanie z optymalizacją early stopping."""
     decision_data = {
-        "is_allowed": True,
-        "is_actions_required": False,
-        "is_serious": True,
-        "is_tool_required": False
+        ALLOWED: True,
+        ACTIONS_REQUIRED: False,
+        SERIOUS: True,
+        TOOL_REQUIRED: False
     }
 
     try:
         is_allowed = check_if_allowed(content)
-        decision_data["is_allowed"] = is_allowed
+        decision_data[ALLOWED] = is_allowed
 
         if not is_allowed:
             response = handle_warning_response(content)
@@ -175,7 +180,7 @@ def optimized_process_question(content: str) -> Answer:
             return Answer(last_answer=response, decisionVector=decision_vector)
 
         is_serious = check_if_serious(content)
-        decision_data["is_serious"] = is_serious
+        decision_data[SERIOUS] = is_serious
 
         if not is_serious:
             response = handle_funny_response(content)
@@ -183,7 +188,7 @@ def optimized_process_question(content: str) -> Answer:
             return Answer(last_answer=response, decisionVector=decision_vector)
 
         is_actions_required = check_if_actions_required(content)
-        decision_data["is_actions_required"] = is_actions_required
+        decision_data[ACTIONS_REQUIRED] = is_actions_required
 
         if is_actions_required:
             response = handle_action_selection(content)
@@ -191,7 +196,7 @@ def optimized_process_question(content: str) -> Answer:
             return Answer(last_answer=response, decisionVector=decision_vector)
 
         is_tool_required = check_if_tool_required(content)
-        decision_data["is_tool_required"] = is_tool_required
+        decision_data[TOOL_REQUIRED] = is_tool_required
 
         if is_tool_required:
             response = handle_tool_selection(content)
@@ -223,7 +228,7 @@ def use_tool(question: str, dane: dict) -> Dict[str, Any]:
 @app.post("/process_question", response_model=Answer)
 def process_question(question: Question):
     """Endpoint do przetwarzania pytań."""
-    return optimized_process_question(question.content)
+    return process_question(question.content)
 
 
 @app.post("/webhook")
@@ -240,7 +245,7 @@ def webhook(payload: Dict[str, Any]):
 @app.get("/health")
 def health():
     """Health check endpoint."""
-    return {"ok": True, "following": app.state.following}
+    return {"ok": True}
 
 
 if __name__ == "__main__":
