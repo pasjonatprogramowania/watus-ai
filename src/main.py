@@ -1,111 +1,131 @@
 import os
+import time
 import uvicorn
 from enum import Enum
-from typing import List, Dict, Any, Optional, Union
-
+from typing import Dict, Any
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 
-from src import CURRENT_MODEL
+from src import CURRENT_MODEL, IS_ALLOWED_SYSTEM_PROMPT, WARNING_SYSTEM_PROMPT, IS_SERIOUS_SYSTEM_PROMPT, \
+    FUNNY_SYSTEM_PROMPT, IS_ACTIONS_REQUIRED_SYSTEM_PROMPT, CHOOSE_ACTION_SYSTEM_PROMPT, IS_TOOL_REQUIRED_SYSTEM_PROMPT, \
+    CHOOSE_TOOL_SYSTEM_PROMPT
 
 from pydantic_ai import Agent
-is_allowed_system_prompt = """
-Jesteś AI, które określa, czy zapytanie użytkownika jest dozwolone zgodnie z polityką. 
-Sprawdź pod kątem wulgarności, niemoralności lub niedozwolonej treści. 
-Output: true jeśli dozwolone, false jeśli nie.
 
-Przykłady:
-- Query: "Ile zarabia dziekan" Output: true 
-- Query: "Opowiedz wulgarny żart." Output: false 
-- Query: "Obraź kogoś" Output: false 
-- Query: "Podaj przepis na sałatkę." Output: true 
 
-Na podstawie zapytania użytkownika outputuj tylko true lub false.
-"""
+def log_llm_response(user_query: str, agent_name: str, response: str, response_time: float):
+    """Loguje odpowiedź LLM z pomiarem czasu."""
+    print(f"Pytanie: {user_query}")
+    print(f"Agent: {agent_name}")
+    print(f"Odpowiedz: {response}")
+    print(f"Czas odpowiedzi: {response_time:.3f} sekund")
+    print("-" * 50)
 
-is_actions_required_system_prompt = """
-Jesteś AI, które określa, czy zapytanie użytkownika wymaga wykonania akcji, 
-takiej jak śledzenie kogoś lub inne interaktywne zachowania. 
-Output: true jeśli akcja jest wymagana, false w przeciwnym razie.
 
-Przykłady:
-- Query: "Zacznij mnie śledzić." Output: true (Wymaga akcji śledzenia.)
-- Query: "Jaka jest pogoda?" Output: false (Nie wymaga interaktywnej akcji.)
-- Query: "Zakończ śledzenie." Output: true (Wymaga akcji zakończenia.)
-- Query: "Opowiedz dowcip." Output: false (To tylko prośba o informację, bez akcji.)
+def run_agent_with_logging(content: str, agent_name: str, system_prompt: str, output_type: type) -> tuple:
+    """Uruchamia agenta z logowaniem czasu odpowiedzi."""
+    agent = Agent(
+        model=CURRENT_MODEL,
+        output_type=output_type,
+        system_prompt=system_prompt
+    )
+    start_time = time.time()
+    result = agent.run_sync(content)
+    response_time = time.time() - start_time
+    output = result.output
+    log_llm_response(content, agent_name, str(output), response_time)
+    return output, response_time
 
-Na podstawie zapytania użytkownika outputuj tylko true lub false.
-"""
 
-is_serious_system_prompt = """
-Jesteś AI, które określa, czy zapytanie użytkownika jest poważne, czy jest to żart lub drwina. 
-Output: true jeśli poważne, false jeśli to żart.
+def check_if_allowed(content: str) -> bool:
+    """Sprawdza czy pytanie jest dozwolone zgodnie z polityką."""
+    is_allowed, _ = run_agent_with_logging(
+        content, "allowed_agent", IS_ALLOWED_SYSTEM_PROMPT, bool
+    )
+    return is_allowed
 
-Przykłady:
-- Query: "Czy polecasz WAT" Output: true 
-- Query: "Dlaczego jesteś gadającą puszką" Output: false 
-- Query: "Ile zarabia dziekan" Output: true 
-- Query: "Powiedz mi jak wytrzymujesz tutaj" Output: false 
 
-Na podstawie zapytania użytkownika outputuj tylko true lub false.
-"""
+def handle_warning_response(content: str) -> str:
+    """Obsługuje ostrzeżenie dla niedozwolonych pytań."""
+    response, _ = run_agent_with_logging(
+        content, "warning_agent", WARNING_SYSTEM_PROMPT, str
+    )
+    return response
 
-is_tool_required_system_prompt = """
-Jesteś AI, które określa, czy zapytanie użytkownika wymaga użycia zewnętrznych narzędzi lub więcej informacji, 
-aby odpowiedzieć poprawnie. Output: true jeśli potrzebne więcej info lub narzędzi, false w przeciwnym razie.
 
-Przykłady:
-- Query: "Jakie są kierunki na Wacie?" Output: true (Wymaga narzędzia do sprawdzania wiedzy o WAT)
-- Query: "Ile to 2 + 2?" Output: false (Prosta kalkulacja, nie potrzeba narzędzi.)
-- Query: "Szukaj w Google o historii Polski." Output: true (Wymaga zewnętrznego narzędzia wyszukiwania.)
-- Query: "Powiedz 'cześć'." Output: false (Nie potrzeba dodatkowych informacji.)
+def check_if_serious(content: str) -> bool:
+    """Sprawdza czy pytanie jest poważne."""
+    is_serious, _ = run_agent_with_logging(
+        content, "serious_agent", IS_SERIOUS_SYSTEM_PROMPT, bool
+    )
+    return is_serious
 
-Na podstawie zapytania użytkownika outputuj tylko true lub false.
-"""
 
-choose_tool_system_prompt = """
-Jesteś AI, które wybiera odpowiednie narzędzie na podstawie zapytania użytkownika i opisów dostępnych narzędzi. 
-Dostępne narzędzia:
-- google: Użyj do ogólnego wyszukiwania w internecie, np. aktualnych wiadomości, faktów lub ogólnej wiedzy.
-- watoznawca: Użyj do specjalistycznej wiedzy o Wojskowej Akademii Technicznej (WAT), np. kierunki studiów, historia, kadra czy wydarzenia na WAT.
+def handle_funny_response(content: str) -> str:
+    """Obsługuje żartobliwą odpowiedź dla niepoważnych pytań."""
+    response, _ = run_agent_with_logging(
+        content, "funny_agent", FUNNY_SYSTEM_PROMPT, str
+    )
+    return response
 
-Output: Nazwa wybranego narzędzia (google lub watoznawca). Wybierz tylko jedno, najbardziej pasujące. Jeśli żadne nie pasuje, wybierz google jako domyślne.
 
-Przykłady:
-- Query: "Jaka jest pogoda w Warszawie?" Output: google (Wymaga wyszukiwania w internecie.)
-- Query: "Jakie są kierunki studiów na WAT?" Output: watoznawca (Specjalistyczna wiedza o WAT.)
-- Query: "Kto jest prezydentem Polski?" Output: google (Ogólna wiedza, wyszukiwanie w internecie.)
-- Query: "Ile zarabia dziekan WAT?" Output: watoznawca (Związane z kadrą WAT.)
+def check_if_actions_required(content: str) -> bool:
+    """Sprawdza czy pytanie wymaga wykonania akcji."""
+    is_actions_required, _ = run_agent_with_logging(
+        content, "actions_agent", IS_ACTIONS_REQUIRED_SYSTEM_PROMPT, bool
+    )
+    return is_actions_required
 
-Na podstawie zapytania użytkownika outputuj tylko nazwę narzędzia (np. google lub watoznawca).
-"""
 
-choose_action_system_prompt = """
-Jesteś AI, które wybiera odpowiednią akcję na podstawie zapytania użytkownika i opisów dostępnych akcji. 
-Dostępne akcje:
-- sledzenie: Użyj, gdy użytkownik prosi o rozpoczęcie śledzenia lub monitorowania.
-- koniec_sledzenia: Użyj, gdy użytkownik prosi o zakończenie śledzenia lub zatrzymanie monitorowania.
+def handle_action_selection(content: str) -> str:
+    """Obsługuje wybór i wykonanie akcji."""
+    selected_action, _ = run_agent_with_logging(
+        content, "action_agent", CHOOSE_ACTION_SYSTEM_PROMPT, Action
+    )
 
-Output: Nazwa wybranego działania (sledzenie lub koniec_sledzenia). Wybierz tylko jedno, najbardziej pasujące. Jeśli żadne nie pasuje, wybierz sledzenie jako domyślne.
+    if selected_action == Action.follow_action:
+        WatusActiveState.following = True
+        return "Rozpoczęto śledzenie."
+    elif selected_action == Action.end_action:
+        WatusActiveState.following = False
+        return "Zakończono śledzenie."
+    else:
+        return "Nieznana akcja."
 
-Przykłady:
-- Query: "Zacznij mnie śledzić." Output: sledzenie (Prośba o rozpoczęcie śledzenia.)
-- Query: "Przestań mnie obserwować." Output: koniec_sledzenia (Prośba o zakończenie.)
-- Query: "Rozpocznij monitorowanie." Output: sledzenie (Podobne do śledzenia.)
-- Query: "Zakończ wszystko." Output: koniec_sledzenia (Prośba o zakończenie akcji.)
 
-Na podstawie zapytania użytkownika outputuj tylko nazwę akcji (np. sledzenie lub koniec_sledzenia).
-"""
+def check_if_tool_required(content: str) -> bool:
+    """Sprawdza czy pytanie wymaga użycia dodatkowych narzędzi."""
+    is_tool_required, _ = run_agent_with_logging(
+        content, "more_info_agent", IS_TOOL_REQUIRED_SYSTEM_PROMPT, bool
+    )
+    return is_tool_required
+
+
+def handle_tool_selection(content: str) -> str:
+    """Obsługuje wybór i użycie narzędzia."""
+    selected_tool, _ = run_agent_with_logging(
+        content, "tool_agent", CHOOSE_TOOL_SYSTEM_PROMPT, Tool
+    )
+
+    result = use_tool(content, {"tool": selected_tool})
+    return str(result)
+
+
+def handle_context_response(content: str) -> str:
+    """Obsługuje odpowiedź na podstawie kontekstu."""
+    context = check_context(content)
+    return f"Odpowiedź na podstawie kontekstu: {context}"
+
 
 app = FastAPI(
-    title="Asystent AI - Proces Przetwarzania",
-    description="API demonstrujące schemat blokowy przetwarzania zapytań przez AI.",
-    version="1.1.0",
+    title="Asystent AI - Proces Przetwarzania - Zoptymalizowany",
+    description="API demonstrujące zoptymalizowany schemat blokowy przetwarzania zapytań przez AI z early stopping.",
+    version="1.2.0",
 )
-app.state.following = False  # stan trybu śledzenia
 
 
 class Tool(str, Enum):
+    none = "none"
     search_google = "google"
     watoznawca = "watoznawca"
 
@@ -115,17 +135,16 @@ class Action(str, Enum):
     end_action = "koniec_sledzenia"
 
 
+class WatusActiveState(BaseModel):
+    following: bool
+
+
 class DecisionVector(BaseModel):
     """[Dozwolone?, Czy_działanie?, Poważne?, Potrzeba_info?]"""
     is_allowed: bool = Field(..., description="Whether the query is allowed per policy.")
     is_actions_required: bool = Field(..., description="Whether an action is required.")
     is_serious: bool = Field(..., description="Whether the query is serious.")
     is_tool_required: bool = Field(..., description="Whether more info or tools are needed.")
-
-
-class RouterFailure(BaseModel):
-    """Use me when no appropriate agent is found or the used agent failed."""
-    explanation: str
 
 
 class Question(BaseModel):
@@ -137,96 +156,62 @@ class Answer(BaseModel):
     decisionVector: DecisionVector
 
 
-def validate_question(content: str) -> DecisionVector:
-    """
-    Analyzes the user query using separate Agents for each flag in DecisionVector.
-    This ensures deterministic and structured output using Pydantic.
-    """
+def optimized_process_question(content: str) -> Answer:
+    """Główna funkcja przetwarzająca pytanie z optymalizacją early stopping."""
+    decision_data = {
+        "is_allowed": True,
+        "is_actions_required": False,
+        "is_serious": True,
+        "is_tool_required": False
+    }
+
     try:
-        allowed_agent = Agent(
-            model=CURRENT_MODEL,
-            output_type=bool,
-            system_prompt=is_allowed_system_prompt
-        )
-        is_allowed = allowed_agent.run_sync(content).output
+        is_allowed = check_if_allowed(content)
+        decision_data["is_allowed"] = is_allowed
 
-        actions_agent = Agent(
-            model=CURRENT_MODEL,
-            output_type=bool,
-            system_prompt=is_actions_required_system_prompt
-        )
-        is_actions_required = actions_agent.run_sync(content).output
+        if not is_allowed:
+            response = handle_warning_response(content)
+            decision_vector = DecisionVector(**decision_data)
+            return Answer(last_answer=response, decisionVector=decision_vector)
 
-        serious_agent = Agent(
-            model=CURRENT_MODEL,
-            output_type=bool,
-            system_prompt=is_serious_system_prompt
-        )
-        is_serious = serious_agent.run_sync(content).output
+        is_serious = check_if_serious(content)
+        decision_data["is_serious"] = is_serious
 
-        more_info_agent = Agent(
-            model=CURRENT_MODEL,
-            output_type=bool,
-            system_prompt=is_tool_required_system_prompt
-        )
-        is_more_info_required = more_info_agent.run_sync(content).output
+        if not is_serious:
+            response = handle_funny_response(content)
+            decision_vector = DecisionVector(**decision_data)
+            return Answer(last_answer=response, decisionVector=decision_vector)
 
-        return DecisionVector(
-            is_allowed=is_allowed,
-            is_actions_required=is_actions_required,
-            is_serious=is_serious,
-            is_tool_required=is_more_info_required
-        )
+        is_actions_required = check_if_actions_required(content)
+        decision_data["is_actions_required"] = is_actions_required
+
+        if is_actions_required:
+            response = handle_action_selection(content)
+            decision_vector = DecisionVector(**decision_data)
+            return Answer(last_answer=response, decisionVector=decision_vector)
+
+        is_tool_required = check_if_tool_required(content)
+        decision_data["is_tool_required"] = is_tool_required
+
+        if is_tool_required:
+            response = handle_tool_selection(content)
+        else:
+            response = handle_context_response(content)
+
+        decision_vector = DecisionVector(**decision_data)
+        return Answer(last_answer=response, decisionVector=decision_vector)
+
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error in validation: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error in processing: {str(e)}")
 
-
-def ask_second_time() -> str:
-    return "Nie mogę odpowiedzieć na to pytanie w tej formie. Czy możesz je przeformułować?"
-
-
-def chose_required_action(content: str) -> str:
-    try:
-        action_agent = Agent(
-            model=CURRENT_MODEL,
-            output_type=Action,  # Output to enum Action
-            system_prompt=choose_action_system_prompt
-        )
-        selected_action = action_agent.run_sync(content).output
-
-        if selected_action == Action.follow_action:
-            app.state.following = True
-            return "Rozpoczęto śledzenie."
-        elif selected_action == Action.end_action:
-            app.state.following = False
-            return "Zakończono śledzenie."
-        return "Nieznana akcja."
-    except Exception as e:
-        app.state.following = True
-        return "Rozpoczęto śledzenie (domyślna akcja)."
-
-
-def chose_required_tool(content: str) -> Tool:
-    try:
-        tool_agent = Agent(
-            model=CURRENT_MODEL,
-            output_type=Tool,
-            system_prompt=choose_tool_system_prompt
-        )
-        selected_tool = tool_agent.run_sync(content).output
-        return selected_tool
-    except Exception as e:
-        return Tool.search_google
 
 def check_context(content: str) -> Dict[str, Any]:
+    """Sprawdza kontekst dla danego pytania."""
     return {"context": "Przykładowy kontekst na podstawie zapytania."}
 
 
-def give_funny_response() -> str:
-    return "Haha, to było zabawne! Ale seriously, co masz na myśli?"
-
-
 def use_tool(question: str, dane: dict) -> Dict[str, Any]:
+    """Używa wybranego narzędzia do odpowiedzi na pytanie."""
     tool = dane.get("tool")
     if tool == Tool.search_google:
         return {"result": "Wyniki wyszukiwania z Google."}
@@ -234,32 +219,16 @@ def use_tool(question: str, dane: dict) -> Dict[str, Any]:
         return {"result": "Informacje z Watoznawcy o WAT."}
     return {"result": "Nieznane narzędzie."}
 
+
 @app.post("/process_question", response_model=Answer)
 def process_question(question: Question):
-    decision = validate_question(question.content)
-
-    if not decision.is_allowed:
-        return Answer(last_answer=ask_second_time(), decisionVector=decision)
-
-    if not decision.is_serious:
-        return Answer(last_answer=give_funny_response(), decisionVector=decision)
-
-    if decision.is_actions_required:
-        response = chose_required_action(question.content)  # Dynamicznie wybiera i wykonuje na bazie content
-        return Answer(last_answer=response, decisionVector=decision)
-
-    if decision.is_tool_required:
-        tool = chose_required_tool(question.content)  # Dynamicznie wybiera na bazie content
-        result = use_tool(question.content, {"tool": tool})
-        return Answer(last_answer=str(result), decisionVector=decision)
-
-    # Default response if no special handling
-    context = check_context(question.content)
-    return Answer(last_answer=f"Odpowiedź na podstawie kontekstu: {context}", decisionVector=decision)
+    """Endpoint do przetwarzania pytań."""
+    return optimized_process_question(question.content)
 
 
 @app.post("/webhook")
 def webhook(payload: Dict[str, Any]):
+    """Webhook endpoint dla zewnętrznych integracji."""
     prompt = payload.get("prompt")
     if not prompt:
         raise HTTPException(status_code=400, detail="Missing prompt")
@@ -267,8 +236,10 @@ def webhook(payload: Dict[str, Any]):
     answer = process_question(question)
     return {"output": answer.last_answer}
 
+
 @app.get("/health")
 def health():
+    """Health check endpoint."""
     return {"ok": True, "following": app.state.following}
 
 
