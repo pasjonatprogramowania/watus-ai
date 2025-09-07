@@ -2,9 +2,12 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
+.idea/
 # C extensions
 *.so
+/chromadb-admin
+*.ipynb
+
 
 # Distribution / packaging
 dist/
@@ -12,10 +15,13 @@ build/
 *.egg-info/
 *.egg
 .eggs/
-
+*/chroma_db
 # Virtual environment
+/chroma_db
 venv/
 .venv/
+processing_results.json
+/data
 env/
 .env/
 

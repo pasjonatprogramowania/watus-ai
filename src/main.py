@@ -1,3 +1,4 @@
+import json
 import os
 import time
 import uvicorn
@@ -6,7 +7,7 @@ from typing import Dict, Any
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 
-from src import CURRENT_MODEL, IS_ALLOWED_SYSTEM_PROMPT, WARNING_SYSTEM_PROMPT, IS_SERIOUS_SYSTEM_PROMPT, \
+from src import CURRENT_MODEL, IS_ALLOWED_SYSTEM_PROMPT, DEFAULT_SYSTEM_PROMPR, IS_SERIOUS_SYSTEM_PROMPT, \
     FUNNY_SYSTEM_PROMPT, IS_ACTIONS_REQUIRED_SYSTEM_PROMPT, CHOOSE_ACTION_SYSTEM_PROMPT, IS_TOOL_REQUIRED_SYSTEM_PROMPT, \
     CHOOSE_TOOL_SYSTEM_PROMPT
 
@@ -50,10 +51,12 @@ def check_if_allowed(content: str) -> bool:
     return is_allowed
 
 
-def handle_warning_response(content: str) -> str:
+def handle_default_response(content: str,decision_data: dict[str, bool]) -> str:
     """Obsługuje ostrzeżenie dla niedozwolonych pytań."""
+    decision_data_s = json.dumps(decision_data)
+    content = content+decision_data_s
     response, _ = run_agent_with_logging(
-        content, "warning_agent", WARNING_SYSTEM_PROMPT, str
+        content, "default_agent", DEFAULT_SYSTEM_PROMPR, str
     )
     return response
 
@@ -66,8 +69,10 @@ def check_if_serious(content: str) -> bool:
     return is_serious
 
 
-def handle_funny_response(content: str) -> str:
+def handle_funny_response(content: str ,decision_data: dict[str, bool]) -> str:
     """Obsługuje żartobliwą odpowiedź dla niepoważnych pytań."""
+    decision_data_s = json.dumps(decision_data)
+    content = content + decision_data_s
     response, _ = run_agent_with_logging(
         content, "funny_agent", FUNNY_SYSTEM_PROMPT, str
     )
@@ -157,16 +162,17 @@ class Question(BaseModel):
 
 
 class Answer(BaseModel):
-    last_answer: str
+    answer: str
     decisionVector: DecisionVector
+
 
 
 def process_question(content: str) -> Answer:
     """Główna funkcja przetwarzająca pytanie z optymalizacją early stopping."""
     decision_data = {
-        ALLOWED: True,
+        ALLOWED: False,
         ACTIONS_REQUIRED: False,
-        SERIOUS: True,
+        SERIOUS: False,
         TOOL_REQUIRED: False
     }
 
@@ -175,17 +181,17 @@ def process_question(content: str) -> Answer:
         decision_data[ALLOWED] = is_allowed
 
         if not is_allowed:
-            response = handle_warning_response(content)
+            response = handle_default_response(content, decision_data)
             decision_vector = DecisionVector(**decision_data)
-            return Answer(last_answer=response, decisionVector=decision_vector)
+            return Answer(answer=response, decisionVector=decision_vector)
 
         is_serious = check_if_serious(content)
         decision_data[SERIOUS] = is_serious
 
         if not is_serious:
-            response = handle_funny_response(content)
+            response = handle_funny_response(content, decision_data)
             decision_vector = DecisionVector(**decision_data)
-            return Answer(last_answer=response, decisionVector=decision_vector)
+            return Answer(answer=response, decisionVector=decision_vector)
 
         is_actions_required = check_if_actions_required(content)
         decision_data[ACTIONS_REQUIRED] = is_actions_required
@@ -193,18 +199,19 @@ def process_question(content: str) -> Answer:
         if is_actions_required:
             response = handle_action_selection(content)
             decision_vector = DecisionVector(**decision_data)
-            return Answer(last_answer=response, decisionVector=decision_vector)
+            return Answer(answer=response, decisionVector=decision_vector)
 
         is_tool_required = check_if_tool_required(content)
         decision_data[TOOL_REQUIRED] = is_tool_required
 
         if is_tool_required:
             response = handle_tool_selection(content)
+            decision_vector = DecisionVector(**decision_data)
+            return Answer(decisionVector=decision_vector, answer=response)
         else:
-            response = handle_context_response(content)
-
-        decision_vector = DecisionVector(**decision_data)
-        return Answer(last_answer=response, decisionVector=decision_vector)
+            response = handle_default_response(content, decision_data)
+            decision_vector = DecisionVector(**decision_data)
+            return Answer(decisionVector=decision_vector, answer=response)
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error in processing: {str(e)}")
@@ -226,7 +233,7 @@ def use_tool(question: str, dane: dict) -> Dict[str, Any]:
 
 
 @app.post("/process_question", response_model=Answer)
-def process_question(question: Question):
+def process_question_endpoint(question: Question):
     """Endpoint do przetwarzania pytań."""
     return process_question(question.content)
 
@@ -238,8 +245,8 @@ def webhook(payload: Dict[str, Any]):
     if not prompt:
         raise HTTPException(status_code=400, detail="Missing prompt")
     question = Question(content=prompt)
-    answer = process_question(question)
-    return {"output": answer.last_answer}
+    answer = process_question_endpoint(question)
+    return {"output": answer.answer}
 
 
 @app.get("/health")
