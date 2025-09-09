@@ -9,7 +9,7 @@ from pydantic import BaseModel, Field
 
 from src import CURRENT_MODEL, IS_ALLOWED_SYSTEM_PROMPT, DEFAULT_SYSTEM_PROMPR, IS_SERIOUS_SYSTEM_PROMPT, \
     FUNNY_SYSTEM_PROMPT, IS_ACTIONS_REQUIRED_SYSTEM_PROMPT, CHOOSE_ACTION_SYSTEM_PROMPT, IS_TOOL_REQUIRED_SYSTEM_PROMPT, \
-    CHOOSE_TOOL_SYSTEM_PROMPT
+    CHOOSE_TOOL_SYSTEM_PROMPT, WARNING_SYSTEM_PROMPR
 
 from pydantic_ai import Agent
 
@@ -59,6 +59,16 @@ def handle_default_response(content: str,decision_data: dict[str, bool]) -> str:
         content, "default_agent", DEFAULT_SYSTEM_PROMPR, str
     )
     return response
+
+def handle_warning_response(content: str,decision_data: dict[str, bool]) -> str:
+    """Obsługuje ostrzeżenie dla niedozwolonych pytań."""
+    decision_data_s = json.dumps(decision_data)
+    content = content+decision_data_s
+    response, _ = run_agent_with_logging(
+        content, "warning_agent", WARNING_SYSTEM_PROMPR, str
+    )
+    return response
+
 
 
 def check_if_serious(content: str) -> bool:
@@ -181,7 +191,7 @@ def process_question(content: str) -> Answer:
         decision_data[ALLOWED] = is_allowed
 
         if not is_allowed:
-            response = handle_default_response(content, decision_data)
+            response = handle_warning_response(content, decision_data)
             decision_vector = DecisionVector(**decision_data)
             return Answer(answer=response, decisionVector=decision_vector)
 
