@@ -21,7 +21,8 @@ build/
 venv/
 .venv/
 processing_results.json
-/data
+!data
+
 env/
 .env/
 

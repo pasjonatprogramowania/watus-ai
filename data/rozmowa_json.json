@@ -1,0 +1,44 @@
+{
+  "conversation": {
+    "participants": ["user_4", "user_5","user_6","watus"],
+    "topic": "Pytania o studia na Wojskowej Akademii Technicznej",
+    "messages": [
+      {
+        "user_id": "user_4",
+        "message": "Cześć Watus, jakie są wymagania rekrutacyjne na kierunek informatyka?",
+        "timestamp": "2024-05-10 11:00",
+        "keywords": ["rekrutacja", "wymagania", "informatyka"]
+      },
+      {
+        "res_to_user_id": "user_4",
+        "message": "Witaj! Na kierunek informatyka wymagana jest matura z matematyki i fizyki lub informatyki na poziomie rozszerzonym. Szczegółowe progi punktowe z zeszłego roku znajdziesz na stronie xyz.",
+        "timestamp": "2024-05-10 11:01",
+        "keywords": ["matura", "matematyka", "fizyka", "informatyka", "progi punktowe"]
+      },
+      {
+        "user_id": "user_5",
+        "message": "A czy są jakieśZ specjalne wymagania co do testów sprawnościowych na studia cywilne?",
+        "timestamp": "2024-05-10 11:02",
+        "keywords": ["testy sprawnościowe", "studia cywilne"]
+      },
+      {
+        "res_to_user_id": "user_5",
+        "message": "Na studia cywilne na kierunku informatyka nie ma egzaminu sprawnościowego. Obowiązuje on tylko kandydatów na studia wojskowe.",
+        "timestamp": "2024-05-10 11:03",
+        "keywords": ["egzamin sprawnościowy", "studia cywilne", "studia wojskowe"]
+      },
+      {
+        "user_id": "user_6",
+        "message": "Rozumiem. Jak wygląda kwestia akademików dla studentów cywilnych?",
+        "timestamp": "2024-05-10 11:04",
+        "keywords": ["akademik", "dom studencki", "studenci cywilni"]
+      },
+      {
+        "res_to_user_id": "user_6",
+        "message": "Studenci cywilni mogą ubiegać się o miejsce w domu studenckim. Koszt zakwaterowania to xyz miesięcznie. Wnioski można składać do dnia xyz. Czy chcesz link do systemu rezerwacji miejsc?",
+        "timestamp": "2024-05-10 11:05",
+        "keywords": ["akademik", "koszt", "wnioski", "rezerwacja"]
+      }
+    ]
+  }
+}
