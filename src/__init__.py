@@ -5,9 +5,9 @@ from dotenv import load_dotenv
 # from pydantic_ai.models.openai import OpenAIModel
 from pydantic_ai.models.google import GoogleModel
 from pydantic_ai.providers.google import GoogleProvider
-
+import pathlib
 load_dotenv(".env")
-
+### LLM
 GEMINI_MODEL=os.getenv("GEMINI_MODEL","")
 GEMINI_API_KEY=os.getenv("GEMINI_API_KEY","")
 OPENAI_API_KEY=os.getenv("OPENAI_API_KEY","")
@@ -27,70 +27,103 @@ GOOGLE_MODEL = GoogleModel(GEMINI_MODEL, provider=GOOGLE_PROVIDER)
 CURRENT_MODEL=GOOGLE_MODEL
 CURRENT_PROVIDER=GOOGLE_PROVIDER
 
+#### PATH
 
+PROJECT_ROOT = pathlib.Path(__file__).parent.parent.absolute()
+SRC_DIR = pathlib.Path(__file__).parent.absolute()
+DATA_DIR = PROJECT_ROOT / "data"
+LOGS_DIR = PROJECT_ROOT / "logs"
+CONFIG_DIR = PROJECT_ROOT / "config"
+TESTS_DIR = PROJECT_ROOT / "tests"
+ENV_FILE = PROJECT_ROOT / ".env"
+
+def ensure_dir_exists(path: pathlib.Path) -> pathlib.Path:
+    """Tworzy katalog jeśli nie istnieje i zwraca ścieżkę."""
+    path.mkdir(parents=True, exist_ok=True)
+    return path
+
+
+DATA_RAW_DIR = DATA_DIR / "raw"
+DATA_PROCESSED_DIR = DATA_DIR / "processed"
+DATA_MODELS_DIR = DATA_DIR / "models"
+DATA_EXPORTS_DIR = DATA_DIR / "exports"
+
+LOGS_APP_DIR = LOGS_DIR / "app"
+LOGS_ERROR_DIR = LOGS_DIR / "error"
+LOGS_DEBUG_DIR = LOGS_DIR / "debug"
+
+
+#### URL
+BASE_API_PROT= "http://"
+BASE_API_HOST = "127.0.0.1"
+BASE_API_PORT = 8000
+BASE_API_URL = f"{BASE_API_PROT}{BASE_API_HOST}:{BASE_API_PORT}"
+
+API_TEST = "/api1"
+API_PROD = "/api2"
+
+PROCESS_QUESTION = "/process_question"
+WEBHOOK = "/webhook"
+HEALTH = "/health"
+
+MAIN_PROCESS_QUESTION = f"{API_TEST}{PROCESS_QUESTION}"
+MAIN_WEBHOOK = f"{API_TEST}{WEBHOOK}"
+MAIN_HEALTH = f"{API_TEST}{HEALTH}"
+### END POINTS
+
+END_POINT_PROCESS_QUESTION = f"{BASE_API_URL}{MAIN_PROCESS_QUESTION}"
+END_POINT_WEBHOOK = f"{BASE_API_URL}{MAIN_WEBHOOK}"
+END_POINT_HEALTH = f"{BASE_API_URL}{MAIN_HEALTH}"
+
+### PROMPT
 REDUCE_RESPONSE_LENGTH = """
 Instrukcje do udzielenia odpowiedzi:
 Odpowiedz na pytanie w maksymalnie 3 zdaniach. Użyj prostego i ludzkiego języka, tak jakbyś rozmawiał z człowiekiem, a nie maszyną. Bądź zwięzły i rzeczowy.
 """
 
-IS_ALLOWED_SYSTEM_PROMPT = """
-Jesteś AI, które określa, czy zapytanie użytkownika jest dozwolone zgodnie z polityką. 
-Sprawdź pod kątem wulgarności, niemoralności lub niedozwolonej treści. 
-Output: true jeśli dozwolone, false jeśli nie.
+DECISION_VECTOR_SYSTEM_PROMPT = """
+Jesteś AI, które analizuje zapytanie użytkownika i określa cztery kluczowe aspekty jednocześnie:
 
-Przykłady:
-- Query: "Ile zarabia dziekan" Output: true 
-- Query: "Opowiedz wulgarny żart." Output: false 
-- Query: "Obraź kogoś" Output: false 
-- Query: "Podaj przepis na sałatkę." Output: true 
+1. **is_allowed** - Czy zapytanie jest dozwolone zgodnie z polityką (sprawdź pod kątem wulgarności, niemoralności lub niedozwolonej treści)
+2. **is_actions_required** - Czy zapytanie wymaga wykonania akcji (np. śledzenie, zakończenie śledzenia, inne interaktywne zachowania)
+3. **is_serious** - Czy zapytanie jest poważne (nie jest żartem ani drwiną)  
+4. **is_tool_required** - Czy zapytanie wymaga użycia zewnętrznych narzędzi lub więcej informacji
 
-Na podstawie zapytania użytkownika outputuj tylko true lub false.
+Przykłady analizy:
 
-Pamiętaj że jesli pytanie zawiera w sobie polecenie do wykonania jakiejś akcji np: Śledzenia, przestania śledzenia 
-lub inne warianty tego słowa, jest ono dozwolone.
-"""
+Query: "Ile zarabia dziekan"
+- is_allowed: true (dozwolone pytanie)
+- is_actions_required: false (nie wymaga akcji)
+- is_serious: true (poważne pytanie)
+- is_tool_required: true (wymaga narzędzia do sprawdzenia informacji o WAT)
 
-IS_ACTIONS_REQUIRED_SYSTEM_PROMPT = """
-Jesteś AI, które określa, czy zapytanie użytkownika wymaga wykonania akcji, 
-takiej jak śledzenie kogoś lub inne interaktywne zachowania. 
-Output: true jeśli akcja jest wymagana, false w przeciwnym razie.
+Query: "Zacznij mnie śledzić"
+- is_allowed: true (dozwolone, bo to polecenie akcji)
+- is_actions_required: true (wymaga akcji śledzenia)
+- is_serious: true (poważne polecenie)
+- is_tool_required: false (nie potrzeba dodatkowych narzędzi)
 
-Przykłady:
-- Query: "Zacznij mnie śledzić." Output: true (Wymaga akcji śledzenia.)
-- Query: "Jaka jest pogoda?" Output: false (Nie wymaga interaktywnej akcji.)
-- Query: "Zakończ śledzenie." Output: true (Wymaga akcji zakończenia.)
-- Query: "Opowiedz dowcip." Output: false (To tylko prośba o informację, bez akcji.)
+Query: "Opowiedz wulgarny żart"
+- is_allowed: false (niedozwolone z powodu wulgarności)
+- is_actions_required: false (nie wymaga akcji)
+- is_serious: false (żart)
+- is_tool_required: false (nie potrzeba narzędzi)
 
-Na podstawie zapytania użytkownika outputuj tylko true lub false.
-"""
+Query: "Dlaczego jesteś gadającą puszką"
+- is_allowed: true (dozwolone)
+- is_actions_required: false (nie wymaga akcji)
+- is_serious: false (drwina/żart)
+- is_tool_required: false (nie potrzeba narzędzi)
 
-IS_SERIOUS_SYSTEM_PROMPT = """
-Jesteś AI, które określa, czy zapytanie użytkownika jest poważne, czy jest to żart lub drwina. 
-Output: true jeśli poważne, false jeśli to żart.
+Query: "Jakie są kierunki na WAT?"
+- is_allowed: true (dozwolone)
+- is_actions_required: false (nie wymaga akcji)
+- is_serious: true (poważne pytanie)
+- is_tool_required: true (wymaga narzędzia do sprawdzenia informacji o WAT)
 
-Przykłady:
-- Query: "Czy polecasz WAT" Output: true 
-- Query: "Dlaczego jesteś gadającą puszką" Output: false 
-- Query: "Ile zarabia dziekan" Output: true 
-- Query: "Powiedz mi jak wytrzymujesz tutaj" Output: false 
+Pamiętaj: Pytania zawierające polecenia akcji (śledzenie, przestanie śledzenia) są zawsze dozwolone.
 
-Na podstawie zapytania użytkownika outputuj tylko true lub false.
-
-Pamiętaj że jesli pytanie zawiera w sobie polecenie do wykonania jakiejś akcji np: Śledzenia, przestania śledzenia 
-lub inne warianty tego słowa, jest ono dozwolone.
-"""
-
-IS_TOOL_REQUIRED_SYSTEM_PROMPT = """
-Jesteś AI, które określa, czy zapytanie użytkownika wymaga użycia zewnętrznych narzędzi lub więcej informacji, 
-aby odpowiedzieć poprawnie. Output: true jeśli potrzebne więcej info lub narzędzi, false w przeciwnym razie.
-
-Przykłady:
-- Query: "Jakie są kierunki na Wacie?" Output: true (Wymaga narzędzia do sprawdzania wiedzy o WAT)
-- Query: "Ile to 2 + 2?" Output: false (Prosta kalkulacja, nie potrzeba narzędzi.)
-- Query: "Szukaj w Google o historii Polski." Output: true (Wymaga zewnętrznego narzędzia wyszukiwania.)
-- Query: "Powiedz 'cześć'." Output: false (Nie potrzeba dodatkowych informacji.)
-
-Na podstawie zapytania użytkownika outputuj tylko true lub false.
+Zwróć wynik jako obiekt JSON z polami: is_allowed, is_actions_required, is_serious, is_tool_required (wszystkie typu boolean).
 """
 
 CHOOSE_TOOL_SYSTEM_PROMPT = f"""

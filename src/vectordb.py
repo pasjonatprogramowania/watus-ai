@@ -4,37 +4,36 @@ import uuid
 import time
 from pathlib import Path
 from typing import Dict, List, Any, Optional
+
+import requests
 from pydantic import BaseModel, Field
 from pydantic_ai import Agent
 import chromadb
 from chromadb.utils.embedding_functions import DefaultEmbeddingFunction
+from src import CURRENT_MODEL, END_POINT_PROCESS_QUESTION
 
-# Disable ChromaDB telemetry to avoid warnings
-os.environ["ANONYMIZED_TELEMETRY"] = "False"
-from src import CURRENT_MODEL
-# Configuration constants
 DATA_FOLDER = "data"
-SUPPORTED_EXTENSIONS = [".txt", ".json", ".jsonl"]
+SUPPORTED_EXTENSIONS = [".json", ".jsonl"]
 CHROMA_DB_PATH = "./chroma_db"
 COLLECTION_NAME = "conversations"
+TOPIC = "Topic"
+KEYWORDS = "Keywords"
+MENTIONED_NAMES = "Mentioned_names"
+CATEGORIES = "Categories"
+CONTENT = "Content"
 
-# Polish prompts
 METADATA_GENERATION_PROMPT = """
 Jesteś ekspertem w analizie rozmów. Przeanalizuj podaną rozmowę i wygeneruj metadane.
 
-UWAGA: Dane mogą być w różnych formatach:
-- Plik .txt: transkrypt rozmowy w formacie "user_1: tekst", "user_2: tekst" (wypowiedzi mogą być przerywane)
-- Plik .json/.jsonl: strukturalne dane z polami "user_id", "user_message", "our_response"
-
 Metadane powinny zawierać:
 - keywords: lista najważniejszych słów kluczowych z rozmowy (z wypowiedzi użytkowników)
-- speaker_names: lista identyfikatorów uczestników (np. ["user_1", "user_2"])
-- main_topic: krótki opis głównego tematu rozmowy na podstawie wypowiedzi użytkowników
-- categories: lista kategorii lub etykiet grupujących rozmowę
+- mentioned_names: lista imion i nazwisk które były wymienione podczas rozmowy 
+- main_topic: krótki opis głównego tematu rozmowy na podstawie wypowiedzi użytkowników (1-2 zdania)
+- categories: lista kategorii lub etykiet grupujących rozmowę (między 10-20 słów)
 
 Skup się na wypowiedziach użytkowników, ignoruj nasze odpowiedzi systemowe.
 
-Treść rozmowy:
+Treść Konwersacji:
 {conversation_content}
 """
 
@@ -43,16 +42,16 @@ Przeanalizuj rozmowę i zidentyfikuj uczestników. Zwróć strukturę danych zgo
 
 Dla każdego uczestnika:
 - Zbierz wszystkie jego wypowiedzi
-- Napisz krótkie streszczenie (1-2 zdania)
+- Napisz krótkie streszczenie (2-4 zdania)
 
-Treść rozmowy:
+Treść Konwersacji:
 {conversation_content}
 """
 
-# Pydantic models for types only
+
 class ConversationMetadata(BaseModel):
     keywords: List[str] = Field(description="Lista słów kluczowych")
-    speaker_names: List[str] = Field(description="Lista imion rozmówców")
+    mentioned_names: List[str] = Field(description="Lista imion rozmówców")
     main_topic: str = Field(description="Główny temat rozmowy")
     categories: List[str] = Field(description="Kategorie rozmowy")
 
@@ -61,14 +60,10 @@ class Speaker(BaseModel):
     messages: List[str] = Field(description="Lista wypowiedzi uczestnika")
     summary: str = Field(description="Streszczenie wypowiedzi uczestnika")
 
-class SpeakerAnalysis(BaseModel):
-    speakers: Dict[str, Speaker] = Field(description="Słownik uczestników rozmowy")
-
 class ProcessingResult(BaseModel):
     filename: str
-    conversation_content: str
+    conversation_content: Dict[str, Any]
     metadata: ConversationMetadata
-    speaker_analysis: SpeakerAnalysis
     processing_id: str
 
 
@@ -107,10 +102,6 @@ def check_file(file_path: str) -> bool:
     
     return True
 
-def load_txt_file(file: Path) -> str:
-    """Load text file as raw text"""
-    with open(file, 'r', encoding='utf-8') as f:
-        return f.read()
 
 def load_json_file(file: Path) -> str:
     """Load JSON file and convert to text"""
@@ -133,9 +124,7 @@ def load_data(file_path: str) -> Optional[str]:
     file = Path(file_path)
     
     try:
-        if file.suffix == ".txt":
-            return load_txt_file(file)
-        elif file.suffix == ".json":
+        if file.suffix == ".json":
             return load_json_file(file)
         elif file.suffix == ".jsonl":
             return load_jsonl_file(file)
@@ -154,127 +143,86 @@ def generate_metadata(conversation_content: str) -> Optional[ConversationMetadat
     except Exception as e:
         print(f"Error generating metadata: {e}")
         return None
-
-def parse_speakers_locally(conversation_content: str, filename: str) -> SpeakerAnalysis:
-    """Parse speakers locally without AI"""
-    speakers_data = {}
-    
-    try:
-        # Try to parse as JSON first (for .json/.jsonl files)
-        if filename.endswith(('.json', '.jsonl')):
-            data = json.loads(conversation_content) if filename.endswith('.json') else None
-            if data and 'conversation' in data:
-                # Handle JSON format
-                messages = data['conversation'].get('messages', [])
-                for msg in messages:
-                    user_id = msg.get('user_id', 'unknown')
-                    user_message = msg.get('user_message', '')
-                    if user_id not in speakers_data:
-                        speakers_data[user_id] = []
-                    if user_message:
-                        speakers_data[user_id].append(user_message)
-            elif filename.endswith('.jsonl'):
-                # Handle JSONL format
-                for line in conversation_content.split('\n'):
-                    if line.strip():
-                        try:
-                            msg = json.loads(line)
-                            user_id = msg.get('user_id', 'unknown')
-                            user_message = msg.get('user_message', '')
-                            if user_id not in speakers_data:
-                                speakers_data[user_id] = []
-                            if user_message:
-                                speakers_data[user_id].append(user_message)
-                        except:
-                            continue
+def get_nested_value(data, key_path):
+    keys = key_path.split('.')
+    current = data
+    for key in keys:
+        if isinstance(current, dict) and key in current:
+            current = current[key]
         else:
-            # Handle .txt format
-            lines = conversation_content.split('\n')
-            for line in lines:
-                if ':' in line:
-                    parts = line.split(':', 1)
-                    if len(parts) == 2:
-                        speaker = parts[0].strip()
-                        message = parts[1].strip()
-                        if speaker not in speakers_data:
-                            speakers_data[speaker] = []
-                        if message:
-                            speakers_data[speaker].append(message)
-    except Exception as e:
-        print(f"Error parsing speakers locally: {e}")
-    
-    # Create Speaker objects
-    speakers = {}
-    for speaker_id, messages in speakers_data.items():
-        if messages:
-            summary = f"Uczestnik {speaker_id} wypowiedział {len(messages)} wiadomości"
-            speakers[speaker_id] = Speaker(
-                name=speaker_id,
-                messages=messages,
-                summary=summary
-            )
-    
-    # Ensure at least 2 speakers
-    if len(speakers) == 0:
-        speakers = {
-            "user_1": Speaker(name="user_1", messages=["Nie znaleziono wypowiedzi"], summary="Brak danych"),
-            "user_2": Speaker(name="user_2", messages=["Nie znaleziono wypowiedzi"], summary="Brak danych")
-        }
-    elif len(speakers) == 1:
-        existing_key = list(speakers.keys())[0]
-        speakers["user_2"] = Speaker(name="user_2", messages=["Drugi uczestnik nie zidentyfikowany"], summary="Brak danych")
-    
-    return SpeakerAnalysis(speakers=speakers)
+            return None
+    return current
 
-def analyze_speakers(conversation_content: str, filename: str = "") -> Optional[SpeakerAnalysis]:
-    """Analyze speakers using local parsing (no AI)"""
-    try:
-        return parse_speakers_locally(conversation_content, filename)
-    except Exception as e:
-        print(f"Error analyzing speakers: {e}")
-        # Create fallback response
-        fallback_analysis = SpeakerAnalysis(
-            speakers={
-                "user_1": Speaker(name="user_1", messages=["Fallback message 1"], summary="Fallback summary for user_1"),
-                "user_2": Speaker(name="user_2", messages=["Fallback message 2"], summary="Fallback summary for user_2")
-            }
-        )
-        print("Using fallback speaker analysis")
-        return fallback_analysis
+def process_conversation_content(conversation_content):
+    if isinstance(conversation_content, str):
+        try:
+            conversation_data = json.loads(conversation_content)
+        except json.JSONDecodeError:
+            lines = conversation_content.strip().split('\n')
+            conversation_data = []
+            for line in lines:
+                if line.strip():
+                    try:
+                        conversation_data.append(json.loads(line))
+                    except json.JSONDecodeError:
+                        continue
+    else:
+        conversation_data = conversation_content
+    keys_to_extract = [
+        "type", "session_id", "group_id", "speaker_id", "turn_ids", 
+        "text_full", "category", "reply_hint"
+    ]
+
+    if isinstance(conversation_data, list):
+        result = {"conversations": []}
+        for item in conversation_data:
+            item_result = {}
+            for key in keys_to_extract:
+                value = get_nested_value(item, key)
+                if value is not None:
+                    item_result[key] = value
+
+            if item_result or not keys_to_extract:
+                if not item_result:
+                    item_result = item
+                result["conversations"].append(item_result)
+        return result
+    else:
+        result = {}
+        for key in keys_to_extract:
+            value = get_nested_value(conversation_data, key)
+            if value is not None:
+                if isinstance(value, list):
+                    result[key] = value
+                else:
+                    result[key] = value
+        if not result:
+            result = conversation_data
+            
+        return result
+
 
 def process_file(file_path: str) -> Optional[ProcessingResult]:
     """Process single conversation file"""
     print(f"Processing file: {file_path}")
-    
-    # Check file
+
     if not check_file(file_path):
         return None
-    
-    # Load data
+
     conversation_content = load_data(file_path)
-    if conversation_content is None:
-        return None
+    processed_conversation_content = process_conversation_content(conversation_content)
     
-    print(f"Loaded {len(conversation_content)} characters from {file_path}")
-    
-    # Generate metadata
+    print(f"Loaded {len(processed_conversation_content)} characters from {file_path}")
+
     print("Generating metadata...")
-    metadata = generate_metadata(conversation_content)
+    metadata = generate_metadata(json.dumps(processed_conversation_content, ensure_ascii=False))
     if metadata is None:
         return None
-    
-    # Analyze speakers
-    print("Analyzing speakers...")
-    speaker_analysis = analyze_speakers(conversation_content, Path(file_path).name)
-    if speaker_analysis is None:
-        return None
-    
-    # Create result
+
     result = ProcessingResult(
         filename=Path(file_path).name,
-        conversation_content=conversation_content,
+        conversation_content=processed_conversation_content,
         metadata=metadata,
-        speaker_analysis=speaker_analysis,
         processing_id=str(uuid.uuid4())
     )
     
@@ -289,8 +237,7 @@ def batch_process(folder: str = DATA_FOLDER) -> List[ProcessingResult]:
     if not folder_path.exists():
         print(f"Error: Folder {folder} does not exist.")
         return results
-    
-    # Find all supported files
+
     files_to_process = []
     for extension in SUPPORTED_EXTENSIONS:
         files_to_process.extend(folder_path.glob(f"*{extension}"))
@@ -300,8 +247,7 @@ def batch_process(folder: str = DATA_FOLDER) -> List[ProcessingResult]:
         return results
     
     print(f"Found {len(files_to_process)} files to process")
-    
-    # Process each file
+
     for file in files_to_process:
         result = process_file(str(file))
         if result:
@@ -318,7 +264,7 @@ def save_results(results: List[ProcessingResult], output_file: str = "processing
             data_to_save.append(result.model_dump())
         
         with open(output_file, 'w', encoding='utf-8') as f:
-            json.dump(data_to_save, f, ensure_ascii=False, indent=2)
+            json.dump(data_to_save, f, ensure_ascii=False, indent=2, separators=(',', ': '))
         
         print(f"Results saved to file: {output_file}")
     except Exception as e:
@@ -347,37 +293,17 @@ def add_to_vector_db(collection, results: List[ProcessingResult]):
     documents = []
     metadatas = []
     ids = []
-    
+
     for result in results:
-        # Create document text from conversation content and metadata
-        doc_text = f"""
-        Filename: {result.filename}
-        Topic: {result.metadata.main_topic}
-        Keywords: {', '.join(result.metadata.keywords)}
-        Speakers: {', '.join(result.metadata.speaker_names)}
-        Categories: {', '.join(result.metadata.categories)}
-        
-        Conversation Content:
-        {result.conversation_content}
-        
-        Speaker Analysis:
-        """
-        
-        # Add speaker summaries to document
-        for speaker_id, speaker in result.speaker_analysis.speakers.items():
-            doc_text += f"\n{speaker.name}: {speaker.summary}"
-        
+        doc_text = json.dumps(result.conversation_content, ensure_ascii=False)
+
         documents.append(doc_text)
-        
-        # Create metadata for ChromaDB (only strings, numbers, bools allowed)
+
         metadata = {
-            "filename": result.filename,
-            "processing_id": result.processing_id,
-            "main_topic": result.metadata.main_topic,
-            "keywords": ", ".join(result.metadata.keywords[:5]),  # Convert list to string
-            "speaker_count": len(result.speaker_analysis.speakers),
-            "categories": ", ".join(result.metadata.categories[:3]),  # Convert list to string
-            "speaker_names": ", ".join(result.metadata.speaker_names)  # Add speaker names as string
+            TOPIC: result.metadata.main_topic,
+            KEYWORDS: ", ".join(result.metadata.keywords[:20]),
+            CATEGORIES: ", ".join(result.metadata.categories[:5]),
+            MENTIONED_NAMES: ", ".join(result.metadata.mentioned_names)
         }
         metadatas.append(metadata)
         ids.append(result.processing_id)
@@ -411,49 +337,39 @@ def search_vector_db(collection, query: str, n_results: int = 3):
 def main():
     """Main program function"""
     print("=== Conversation File Processor ===")
-    
-    # Initialize vector database
+
     print("Initializing vector database...")
     client, collection = initialize_vector_db()
-    
-    # Batch process all files in data folder
+
     results = batch_process()
-    
+
     if results:
-        # Save results to JSON
+
         save_results(results)
-        
-        # Add to vector database
         if collection:
+            print("Testing API with processed conversations...")
+            for res in results:
+                text_content = ""
+                if 'conversations' in res.conversation_content:
+                    for conv in res.conversation_content['conversations']:
+                        if 'text_full' in conv:
+                            text_content += conv['text_full'] + " "
+                elif 'text_full' in res.conversation_content:
+                    text_content = res.conversation_content['text_full']
+                
+                if text_content.strip():
+                    try:
+                        data = {'content': text_content.strip()}
+                        response = requests.post(END_POINT_PROCESS_QUESTION, json=data)
+                        print(f"API Response for '{text_content[:50]}...': {response.status_code}")
+                        if response.status_code == 200:
+                            print(f"Response: {response.json()}")
+                        else:
+                            print(f"Error: {response.text}")
+                    except Exception as e:
+                        print(f"Error calling API: {e}")
             print("Adding conversations to vector database...")
             add_to_vector_db(collection, results)
-        
-        # Display summary
-        print("\n=== PROCESSING SUMMARY ===")
-        for result in results:
-            print(f"\nFile: {result.filename}")
-            print(f"ID: {result.processing_id}")
-            print(f"Main topic: {result.metadata.main_topic}")
-            print(f"Number of speakers: {len(result.speaker_analysis.speakers)}")
-            print(f"Keywords: {', '.join(result.metadata.keywords[:5])}")
-        
-        # Demo search functionality
-        if collection:
-            print("\n=== VECTOR DATABASE SEARCH DEMO ===")
-            demo_queries = [
-                "rozmowa o bazie danych",
-                "planowanie wakacji",
-                "testy jednostkowe"
-            ]
-            
-            for query in demo_queries:
-                print(f"\nSearching for: '{query}'")
-                search_results = search_vector_db(collection, query, n_results=2)
-                if search_results and search_results['documents']:
-                    for i, (doc, metadata) in enumerate(zip(search_results['documents'][0], search_results['metadatas'][0])):
-                        print(f"  Result {i+1}: {metadata['filename']} - {metadata['main_topic']}")
-                else:
-                    print("  No results found")
     else:
         print("No files were successfully processed.")
 
