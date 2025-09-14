@@ -12,7 +12,8 @@ build/
 *.egg-info/
 *.egg
 .eggs/
-
+/chroma_db
+processing_results.json
 # Virtual environment
 venv/
 .venv/
