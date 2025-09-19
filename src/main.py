@@ -13,6 +13,12 @@ from src import CURRENT_MODEL, DECISION_VECTOR_SYSTEM_PROMPT, DEFAULT_SYSTEM_PRO
 
 from pydantic_ai import Agent
 
+# --- NEW: ChromaDB ---
+import chromadb
+from chromadb.utils.embedding_functions import DefaultEmbeddingFunction
+from src.vectordb import CHROMA_DB_PATH, COLLECTION_NAME
+
+
 TOOL_REQUIRED = "is_tool_required"
 SERIOUS = "is_serious"
 ACTIONS_REQUIRED = "is_actions_required"
@@ -51,8 +57,9 @@ class Answer(BaseModel):
     decisionVector: DecisionVector
 
 
+# ---------- LOG + AGENT RUNNER ----------
+
 def log_llm_response(user_query: str, agent_name: str, response: str, response_time: float):
-    """Loguje odpowiedź LLM z pomiarem czasu."""
     print(f"Pytanie: {user_query}")
     print(f"Agent: {agent_name}")
     print(f"Odpowiedz: {response}")
@@ -61,7 +68,6 @@ def log_llm_response(user_query: str, agent_name: str, response: str, response_t
 
 
 def run_agent_with_logging(content: str, agent_name: str, system_prompt: str, output_type: type) -> tuple:
-    """Uruchamia agenta z logowaniem czasu odpowiedzi."""
     agent = Agent(
         model=CURRENT_MODEL,
         output_type=output_type,
@@ -75,36 +81,68 @@ def run_agent_with_logging(content: str, agent_name: str, system_prompt: str, ou
     return output, response_time
 
 
+# ---------- CHROMA DB ----------
+
+_chroma_collection = None
+
+def _get_chroma_collection():
+    global _chroma_collection
+    if _chroma_collection is None:
+        client = chromadb.PersistentClient(path=CHROMA_DB_PATH)
+        _chroma_collection = client.get_or_create_collection(
+            name=COLLECTION_NAME,
+            embedding_function=DefaultEmbeddingFunction()
+        )
+    return _chroma_collection
+
+
+def _answer_from_chroma(question: str) -> str | None:
+    col = _get_chroma_collection()
+    res = col.query(query_texts=[question], n_results=1)
+    metas = res.get("metadatas") or []
+    docs = res.get("documents") or []
+    # Try to get answer from metadata first (if you stored it there), else from document text
+    if metas and metas[0] and "answer" in metas[0][0]:
+        return metas[0][0]["answer"]
+    if docs and docs[0]:
+        try:
+            obj = json.loads(docs[0][0])
+            # If your jsonl lines are {"question": ..., "answer": ...}
+            if isinstance(obj, dict) and "answer" in obj:
+                return obj["answer"]
+        except Exception:
+            return docs[0][0]
+    return None
+
+
+# ---------- DECISION FLOW ----------
+
 def get_decision_vector(content: str) -> DecisionVector:
-    """Sprawdza pytanie pod kątem wszystkich kategorii decyzyjnych w jednym requestcie."""
     decision_vector, _ = run_agent_with_logging(
         content, "decision_vector_agent", DECISION_VECTOR_SYSTEM_PROMPT, DecisionVector
     )
     return decision_vector
 
 
-def handle_default_response(content: str,decision_data: dict[str, bool]) -> str:
-    """Obsługuje ostrzeżenie dla niedozwolonych pytań."""
+def handle_default_response(content: str, decision_data: dict[str, bool]) -> str:
     decision_data_s = json.dumps(decision_data)
-    content = content+decision_data_s
+    content = content + decision_data_s
     response, _ = run_agent_with_logging(
         content, "default_agent", DEFAULT_SYSTEM_PROMPR, str
     )
     return response
 
-def handle_warning_response(content: str,decision_data: dict[str, bool]) -> str:
-    """Obsługuje ostrzeżenie dla niedozwolonych pytań."""
+
+def handle_warning_response(content: str, decision_data: dict[str, bool]) -> str:
     decision_data_s = json.dumps(decision_data)
-    content = content+decision_data_s
+    content = content + decision_data_s
     response, _ = run_agent_with_logging(
         content, "warning_agent", WARNING_SYSTEM_PROMPR, str
     )
     return response
 
 
-
-def handle_funny_response(content: str ,decision_data: dict[str, bool]) -> str:
-    """Obsługuje żartobliwą odpowiedź dla niepoważnych pytań."""
+def handle_funny_response(content: str, decision_data: dict[str, bool]) -> str:
     decision_data_s = json.dumps(decision_data)
     content = content + decision_data_s
     response, _ = run_agent_with_logging(
@@ -114,11 +152,9 @@ def handle_funny_response(content: str ,decision_data: dict[str, bool]) -> str:
 
 
 def handle_action_selection(content: str) -> str:
-    """Obsługuje wybór i wykonanie akcji."""
     selected_action, _ = run_agent_with_logging(
         content, "action_agent", CHOOSE_ACTION_SYSTEM_PROMPT, Action
     )
-
     if selected_action == Action.follow_action:
         WatusActiveState.following = True
         return "Rozpoczęto śledzenie."
@@ -129,23 +165,25 @@ def handle_action_selection(content: str) -> str:
         return "Nieznana akcja."
 
 
+def use_tool(question: str, dane: dict) -> str:
+    """Używa wybranego narzędzia do odpowiedzi na pytanie."""
+    tool = dane.get("tool")
+    if tool in (Tool.watoznawca, Tool.search_google):
+        ans = _answer_from_chroma(question)
+        if ans:
+            return ans
+        return "Nie znalazłem jednoznacznej odpowiedzi w lokalnej bazie."
+    return "Nieznane narzędzie."
 
 
 def handle_tool_selection(content: str) -> str:
-    """Obsługuje wybór i użycie narzędzia."""
     selected_tool, _ = run_agent_with_logging(
         content, "tool_agent", CHOOSE_TOOL_SYSTEM_PROMPT, Tool
     )
-
-    result = use_tool(content, {"tool": selected_tool})
-    return str(result)
+    return use_tool(content, {"tool": selected_tool})
 
 
-def handle_context_response(content: str) -> str:
-    """Obsługuje odpowiedź na podstawie kontekstu."""
-    context = check_context(content)
-    return f"Odpowiedź na podstawie kontekstu: {context}"
-
+# ---------- API ----------
 
 app = FastAPI(
     title="Asystent AI - Proces Przetwarzania - Zoptymalizowany",
@@ -154,9 +192,7 @@ app = FastAPI(
 )
 
 
-
 def process_question(content: str) -> Answer:
-    """Główna funkcja przetwarzająca pytanie z optymalizacją early stopping."""
     try:
         decision_vector = get_decision_vector(content)
 
@@ -190,30 +226,13 @@ def process_question(content: str) -> Answer:
         raise HTTPException(status_code=500, detail=f"Error in processing: {str(e)}")
 
 
-def check_context(content: str) -> Dict[str, Any]:
-    """Sprawdza kontekst dla danego pytania."""
-    return {"context": "Przykładowy kontekst na podstawie zapytania."}
-
-
-def use_tool(question: str, dane: dict) -> Dict[str, Any]:
-    """Używa wybranego narzędzia do odpowiedzi na pytanie."""
-    tool = dane.get("tool")
-    if tool == Tool.search_google:
-        return {"result": "Wyniki wyszukiwania z Google."}
-    elif tool == Tool.watoznawca:
-        return {"result": "Informacje z Watoznawcy o WAT."}
-    return {"result": "Nieznane narzędzie."}
-
-
 @app.post(MAIN_PROCESS_QUESTION, response_model=Answer)
 def process_question_endpoint(question: Question):
-    """Endpoint do przetwarzania pytań."""
     return process_question(question.content)
 
 
 @app.post(MAIN_WEBHOOK)
 def webhook(payload: Dict[str, Any]):
-    """Webhook endpoint dla zewnętrznych integracji."""
     prompt = payload.get("prompt")
     if not prompt:
         raise HTTPException(status_code=400, detail="Missing prompt")
@@ -224,8 +243,16 @@ def webhook(payload: Dict[str, Any]):
 
 @app.get(MAIN_HEALTH)
 def health():
-    """Health check endpoint."""
     return {"ok": True}
+
+@app.get("/debug/search")
+def debug_search(q: str):
+    """
+    Debug endpoint: search ChromaDB directly for the closest QA entry.
+    """
+    from src.main import _answer_from_chroma
+    answer = _answer_from_chroma(q)
+    return {"query": q, "answer": answer}
 
 
 if __name__ == "__main__":
