@@ -26,9 +26,14 @@ GOOGLE_MODEL = GoogleModel(GEMINI_MODEL, provider=GOOGLE_PROVIDER)
 
 CURRENT_MODEL=GOOGLE_MODEL
 CURRENT_PROVIDER=GOOGLE_PROVIDER
+### FIELDS
 
+ANSWER = "answer"
+DOCUMENTS = "documents"
+METADATAS = "metadatas"
+QUESTION = 'question'
 #### PATH
-
+QUESTIONS_JSONL = "questions.jsonl"
 PROJECT_ROOT = pathlib.Path(__file__).parent.parent.absolute()
 SRC_DIR = pathlib.Path(__file__).parent.absolute()
 DATA_DIR = PROJECT_ROOT / "data"
@@ -36,7 +41,8 @@ LOGS_DIR = PROJECT_ROOT / "logs"
 CONFIG_DIR = PROJECT_ROOT / "config"
 TESTS_DIR = PROJECT_ROOT / "tests"
 ENV_FILE = PROJECT_ROOT / ".env"
-
+CHROMADB_PATH = PROJECT_ROOT / "chroma_db"
+QUESTION_FILES_PATH = DATA_DIR / QUESTIONS_JSONL
 def ensure_dir_exists(path: pathlib.Path) -> pathlib.Path:
     """Tworzy katalog jeśli nie istnieje i zwraca ścieżkę."""
     path.mkdir(parents=True, exist_ok=True)
@@ -44,6 +50,10 @@ def ensure_dir_exists(path: pathlib.Path) -> pathlib.Path:
 
 
 DATA_RAW_DIR = DATA_DIR / "raw"
+DATA_TEST_DIR = DATA_DIR / "test"
+DATA_FINAL_DIR = DATA_DIR / "final"
+DATA_TEST_SPEACH_DIR = DATA_TEST_DIR / "speach"
+DATA_TEST_WATUS_DIR = DATA_TEST_DIR / "watus"
 DATA_PROCESSED_DIR = DATA_DIR / "processed"
 DATA_MODELS_DIR = DATA_DIR / "models"
 DATA_EXPORTS_DIR = DATA_DIR / "exports"

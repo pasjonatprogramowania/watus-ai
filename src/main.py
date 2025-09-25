@@ -9,21 +9,21 @@ from pydantic import BaseModel, Field
 
 from src import CURRENT_MODEL, DECISION_VECTOR_SYSTEM_PROMPT, DEFAULT_SYSTEM_PROMPR, \
     FUNNY_SYSTEM_PROMPT, CHOOSE_ACTION_SYSTEM_PROMPT, CHOOSE_TOOL_SYSTEM_PROMPT, WARNING_SYSTEM_PROMPR, \
-    BASE_API_HOST, BASE_API_PORT, MAIN_PROCESS_QUESTION, MAIN_HEALTH, MAIN_WEBHOOK
+    BASE_API_HOST, BASE_API_PORT, MAIN_PROCESS_QUESTION, MAIN_HEALTH, MAIN_WEBHOOK, CHROMADB_PATH, METADATAS, DOCUMENTS, \
+    ANSWER
 
 from pydantic_ai import Agent
 
 # --- NEW: ChromaDB ---
 import chromadb
 from chromadb.utils.embedding_functions import DefaultEmbeddingFunction
-from src.vectordb import CHROMA_DB_PATH, COLLECTION_NAME
+from src.vectordb import COLLECTION_NAME
 
 
 TOOL_REQUIRED = "is_tool_required"
 SERIOUS = "is_serious"
 ACTIONS_REQUIRED = "is_actions_required"
 ALLOWED = "is_allowed"
-
 
 class Tool(str, Enum):
     none = "none"
@@ -88,7 +88,7 @@ _chroma_collection = None
 def _get_chroma_collection():
     global _chroma_collection
     if _chroma_collection is None:
-        client = chromadb.PersistentClient(path=CHROMA_DB_PATH)
+        client = chromadb.PersistentClient(path=CHROMADB_PATH)
         _chroma_collection = client.get_or_create_collection(
             name=COLLECTION_NAME,
             embedding_function=DefaultEmbeddingFunction()
@@ -99,17 +99,17 @@ def _get_chroma_collection():
 def _answer_from_chroma(question: str) -> str | None:
     col = _get_chroma_collection()
     res = col.query(query_texts=[question], n_results=1)
-    metas = res.get("metadatas") or []
-    docs = res.get("documents") or []
+    metas = res.get(METADATAS) or []
+    docs = res.get(DOCUMENTS) or []
     # Try to get answer from metadata first (if you stored it there), else from document text
-    if metas and metas[0] and "answer" in metas[0][0]:
-        return metas[0][0]["answer"]
+    if metas and metas[0] and ANSWER in metas[0][0]:
+        return metas[0][0][ANSWER]
     if docs and docs[0]:
         try:
             obj = json.loads(docs[0][0])
             # If your jsonl lines are {"question": ..., "answer": ...}
-            if isinstance(obj, dict) and "answer" in obj:
-                return obj["answer"]
+            if isinstance(obj, dict) and ANSWER in obj:
+                return obj[ANSWER]
         except Exception:
             return docs[0][0]
     return None
@@ -250,7 +250,6 @@ def debug_search(q: str):
     """
     Debug endpoint: search ChromaDB directly for the closest QA entry.
     """
-    from src.main import _answer_from_chroma
     answer = _answer_from_chroma(q)
     return {"query": q, "answer": answer}
 

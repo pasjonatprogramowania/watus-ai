@@ -10,11 +10,11 @@ from pydantic import BaseModel, Field
 from pydantic_ai import Agent
 import chromadb
 from chromadb.utils.embedding_functions import DefaultEmbeddingFunction
-from src import CURRENT_MODEL, END_POINT_PROCESS_QUESTION
+from src import CURRENT_MODEL, END_POINT_PROCESS_QUESTION, DATA_DIR, CHROMADB_PATH,QUESTION_FILES_PATH, ANSWER, QUESTION
 
-DATA_FOLDER = "data"
+
 SUPPORTED_EXTENSIONS = [".json", ".jsonl"]
-CHROMA_DB_PATH = "./chroma_db"
+
 COLLECTION_NAME = "conversations"
 TOPIC = "Topic"
 KEYWORDS = "Keywords"
@@ -32,18 +32,22 @@ Metadane powinny zawierać:
 - categories: lista kategorii lub etykiet grupujących rozmowę (między 10-20 słów)
 """
 
-class ConversationMetadata(BaseModel):
+class MetadataFormat(BaseModel):
     keywords: List[str] = Field(description="Lista słów kluczowych")
     mentioned_names: List[str] = Field(description="Lista imion rozmówców")
     main_topic: str = Field(description="Główny temat rozmowy")
     categories: List[str] = Field(description="Kategorie rozmowy")
 
-class ProcessingResult(BaseModel):
+class ReadyToVectorizeFormat(BaseModel):
     filename: str
-    conversation_content: Dict[str, Any]
-    metadata: ConversationMetadata
+    data_content: Dict[str, Any]
+    metadata: MetadataFormat
     processing_id: str
 
+class Speaker(BaseModel):
+    name: str = Field(description="Imię lub identyfikator uczestnika")
+    messages: List[str] = Field(description="Lista wypowiedzi uczestnika")
+    summary: str = Field(description="Streszczenie wypowiedzi uczestnika")
 # ---------------------- LLM utils ----------------------
 
 def log_llm_response(user_query: str, agent_name: str, response: str, response_time: float):
@@ -100,20 +104,20 @@ def load_data(file_path: str) -> Optional[str]:
 
 # ---------------------- Processing ----------------------
 
-def generate_metadata(conversation_content: str) -> Optional[ConversationMetadata]:
+def generate_metadata(conversation_content: str) -> Optional[MetadataFormat]:
     try:
         prompt = METADATA_GENERATION_PROMPT.format(conversation_content=conversation_content)
         metadata, _ = run_agent_with_logging(
             prompt, "metadata_agent",
             "Jesteś ekspertem w analizie rozmów i generowaniu metadanych.",
-            ConversationMetadata
+            MetadataFormat
         )
         return metadata
     except Exception as e:
         print(f"Error generating metadata: {e}")
         return None
 
-def process_file(file_path: str) -> Optional[ProcessingResult]:
+def process_file(file_path: str) -> Optional[ReadyToVectorizeFormat]:
     print(f"Processing file: {file_path}")
     if not check_file(file_path):
         return None
@@ -126,24 +130,20 @@ def process_file(file_path: str) -> Optional[ProcessingResult]:
     if metadata is None:
         return None
 
-    result = ProcessingResult(
+    result = ReadyToVectorizeFormat(
         filename=Path(file_path).name,
-        conversation_content={"raw": conversation_content},
+        data_content={"raw": conversation_content},
         metadata=metadata,
         processing_id=str(uuid.uuid4())
     )
     return result
 
-def batch_process(folder: str = DATA_FOLDER) -> List[ProcessingResult]:
+def batch_process() -> List[ReadyToVectorizeFormat]:
     results = []
-    folder_path = Path(folder)
-    if not folder_path.exists():
-        print(f"Error: Folder {folder} does not exist.")
-        return results
 
     files_to_process = []
     for extension in SUPPORTED_EXTENSIONS:
-        files_to_process.extend(folder_path.glob(f"*{extension}"))
+        files_to_process.extend(DATA_DIR.glob(f"*{extension}"))
 
     for file in files_to_process:
         result = process_file(str(file))
@@ -155,25 +155,25 @@ def batch_process(folder: str = DATA_FOLDER) -> List[ProcessingResult]:
 
 def initialize_vector_db():
     try:
-        client = chromadb.PersistentClient(path=CHROMA_DB_PATH)
+        client = chromadb.PersistentClient(path=CHROMADB_PATH)
         collection = client.get_or_create_collection(
             name=COLLECTION_NAME,
             embedding_function=DefaultEmbeddingFunction()
         )
-        print(f"Vector database initialized at: {CHROMA_DB_PATH}")
+        print(f"Vector database initialized at: {CHROMADB_PATH}")
         return client, collection
     except Exception as e:
         print(f"Error initializing vector database: {e}")
         return None, None
 
-def add_to_vector_db(collection, results: List[ProcessingResult]):
+def add_to_vector_db(collection, results: List[ReadyToVectorizeFormat]):
     if not collection:
         return
     documents = []
     metadatas = []
     ids = []
     for result in results:
-        doc_text = json.dumps(result.conversation_content, ensure_ascii=False)
+        doc_text = json.dumps(result.data_content, ensure_ascii=False)
         documents.append(doc_text)
         metadata = {
             TOPIC: result.metadata.main_topic,
@@ -186,9 +186,9 @@ def add_to_vector_db(collection, results: List[ProcessingResult]):
     collection.add(documents=documents, metadatas=metadatas, ids=ids)
     print(f"Added {len(documents)} items to vector database")
 
-def ingest_qa_jsonl(file_path="data/questions.jsonl"):
+def ingest_qa_jsonl(file_path=QUESTION_FILES_PATH):
     """Ingests Q&A pairs into ChromaDB as question->answer entries"""
-    client = chromadb.PersistentClient(path=CHROMA_DB_PATH)
+    client = chromadb.PersistentClient(path=CHROMADB_PATH)
     collection = client.get_or_create_collection(
         name=COLLECTION_NAME,
         embedding_function=DefaultEmbeddingFunction()
@@ -196,12 +196,12 @@ def ingest_qa_jsonl(file_path="data/questions.jsonl"):
     with open(file_path, encoding="utf-8") as f:
         qa_data = [json.loads(line) for line in f if line.strip()]
 
-    documents = [item["question"] for item in qa_data]
-    metadatas = [{"answer": item["answer"]} for item in qa_data]
+    documents = [item[QUESTION] for item in qa_data]
+    metadatas = [{ANSWER: item[ANSWER]} for item in qa_data]
     ids = [str(uuid.uuid4()) for _ in qa_data]
 
     collection.add(documents=documents, metadatas=metadatas, ids=ids)
-    print(f"✅ Ingested {len(documents)} QA pairs into ChromaDB")
+    print(f"Ingested {len(documents)} QA pairs into ChromaDB")
 
 # ---------------------- Main ----------------------
 
