@@ -1,0 +1,217 @@
+{
+  "total": 30,
+  "correct": 30,
+  "accuracy_percent": 100.0,
+  "results": [
+    {
+      "question": "Która wcześniejsza uchwała traci moc w następstwie przyjęcia uchwały 37/WAT/2022?",
+      "expected": "Uchwała nr 24/WAT/2019.",
+      "got": "Uchwała nr 24/WAT/2019.",
+      "status": 200,
+      "matched": true
+    },
+    {
+      "question": "Ile punktów ECTS student musi zdobyć z zajęć prowadzonych z bezpośrednim udziałem nauczycieli akademickich?",
+      "expected": "92 ECTS",
+      "got": "92 ECTS",
+      "status": 200,
+      "matched": true
+    },
+    {
+      "question": "Jaki jest średni standard wyposażenia do nauki w akademikach (w skali 1–5)?",
+      "expected": "3",
+      "got": "3",
+      "status": 200,
+      "matched": true
+    },
+    {
+      "question": "Która siłownia na Bemowie ma najwyższą ocenę gwiazdkową?",
+      "expected": "Fitness Klub ZDROFIT Bemowo - Dywizjonu 303",
+      "got": "Fitness Klub ZDROFIT Bemowo - Dywizjonu 303",
+      "status": 200,
+      "matched": true
+    },
+    {
+      "question": "Jak nazywa się najlepiej oceniana ze wszystkich sklepów na terenie WAT i jaką ma ocenę oraz liczbę opinii?",
+      "expected": "NaŚcieżce.pl - bicycle shop and service — 4.7 gwiazdek na podstawie 224 opinii.",
+      "got": "NaŚcieżce.pl - bicycle shop and service — 4.7 gwiazdek na podstawie 224 opinii.",
+      "status": 200,
+      "matched": true
+    },
+    {
+      "question": "Jakiego rodzaju lokalem jest Well Fitness - Warszawa, Bemowo i jak klienci go oceniają?",
+      "expected": "Well Fitness - Warszawa, Bemowo to gym, oceniany na 4.1/5.",
+      "got": "Well Fitness - Warszawa, Bemowo to gym, oceniany na 4.1/5.",
+      "status": 200,
+      "matched": true
+    },
+    {
+      "question": "Ile punktów ECTS jest wymagane do ukończenia studiów?",
+      "expected": "180 ECTS",
+      "got": "180 ECTS",
+      "status": 200,
+      "matched": true
+    },
+    {
+      "question": "Ile semestrów obejmuje program?",
+      "expected": "Sześć semestrów",
+      "got": "Sześć semestrów",
+      "status": 200,
+      "matched": true
+    },
+    {
+      "question": "Wymień dwa kierunki jednolitych studiów magisterskich wymienione w uchwale 87/WAT/2023.",
+      "expected": "Geoinformatyka oraz technologie przełomowe.",
+      "got": "Geoinformatyka oraz technologie przełomowe.",
+      "status": 200,
+      "matched": true
+    },
+    {
+      "question": "W jakim języku prowadzone są studia?",
+      "expected": "Polski",
+      "got": "Polski",
+      "status": 200,
+      "matched": true
+    },
+    {
+      "question": "Jakie zagadnienie reguluje uchwała nr 47/WAT/2019?",
+      "expected": "sposobu potwierdzania efektów uczenia się",
+      "got": "sposobu potwierdzania efektów uczenia się",
+      "status": 200,
+      "matched": true
+    },
+    {
+      "question": "Z jakiego dnia pochodzi uchwała nr 106/WAT/2024?",
+      "expected": "24 października 2024 r.",
+      "got": "24 października 2024 r.",
+      "status": 200,
+      "matched": true
+    },
+    {
+      "question": "Podaj dwie najczęściej wymieniane w ankietach zalety posiadania własnego biurka w pokoju akademika.",
+      "expected": "Każdy student ma własne stanowisko pracy i nie trzeba dzielić biurek z innymi mieszkańcami.",
+      "got": "Każdy student ma własne stanowisko pracy i nie trzeba dzielić biurek z innymi mieszkańcami.",
+      "status": 200,
+      "matched": true
+    },
+    {
+      "question": "Jakie udogodnienie elektryczne wspomniano w odniesieniu do rolet w jednym z akademików i jak wpływa ono na warunki wypoczynku?",
+      "expected": "Rolety zamykane elektrycznie zapewniają dobre warunki do wypoczynku.",
+      "got": "Rolety zamykane elektrycznie zapewniają dobre warunki do wypoczynku.",
+      "status": 200,
+      "matched": true
+    },
+    {
+      "question": "Jaki jest łączny wymiar praktyk zawodowych i ile punktów ECTS za nie uzyskuje student?",
+      "expected": "Praktyka trwa łącznie 4 tygodnie i jest warta 4 ECTS",
+      "got": "Praktyka trwa łącznie 4 tygodnie i jest warta 4 ECTS",
+      "status": 200,
+      "matched": true
+    },
+    {
+      "question": "Pod jakim dokładnym adresem znajduje się Zdrofit Zdrowe Miejsce - Bemowo i jakiego typu jest to lokal?",
+      "expected": "Zdrofit Zdrowe Miejsce - Bemowo mieści się przy Dywizjonu 303 129B i jest to physical therapist.",
+      "got": "Zdrofit Zdrowe Miejsce - Bemowo mieści się przy Dywizjonu 303 129B i jest to physical therapist.",
+      "status": 200,
+      "matched": true
+    },
+    {
+      "question": "Jakiego rodzaju lokalem jest FitnessAtut i jak klienci go oceniają?",
+      "expected": "FitnessAtut to gym, oceniany na 4.8/5.",
+      "got": "FitnessAtut to gym, oceniany na 4.8/5.",
+      "status": 200,
+      "matched": true
+    },
+    {
+      "question": "Wymień trzy kierunki jednolitych studiów magisterskich wymienione w uchwale 64/WAT/2024.",
+      "expected": "Geoinformatyka, budownictwo i inżynieria cyfrowa, technologie przełomowe.",
+      "got": "Geoinformatyka, budownictwo i inżynieria cyfrowa, technologie przełomowe.",
+      "status": 200,
+      "matched": true
+    },
+    {
+      "question": "Na jakim akcie prawnym oparto uchwałę 134/WAT/2020 i do którego roku akademickiego się odnosi?",
+      "expected": "Na ustawie z 20 lipca 2018 r. – Prawo o szkolnictwie wyższym i nauce; dotyczy rekrutacji na rok akademicki 2024/2025.",
+      "got": "Na ustawie z 20 lipca 2018 r. – Prawo o szkolnictwie wyższym i nauce; dotyczy rekrutacji na rok akademicki 2024/2025.",
+      "status": 200,
+      "matched": true
+    },
+    {
+      "question": "Ile wynosi średni czas drogi na zajęcia i stołówki (pieszo)?",
+      "expected": "10–20 minut",
+      "got": "10–20 minut",
+      "status": 200,
+      "matched": true
+    },
+    {
+      "question": "Jakie kierunki studiów wyłączono z przywileju maksymalnych punktów dla laureatów Olimpiady Fizycznej zgodnie z uchwałą 20/WAT/2021?",
+      "expected": "Bezpieczeństwo narodowe, obronność państwa, logistyka ekonomiczna oraz zarządzanie.",
+      "got": "Bezpieczeństwo narodowe, obronność państwa, logistyka ekonomiczna oraz zarządzanie.",
+      "status": 200,
+      "matched": true
+    },
+    {
+      "question": "Pod jakim dokładnym adresem znajduje się Indian Taste Food & Wine Bemowo i jakiego typu jest to lokal?",
+      "expected": "Indian Taste Food & Wine Bemowo mieści się przy Lazurowa 89/LU4 i jest to indian.",
+      "got": "Indian Taste Food & Wine Bemowo mieści się przy Lazurowa 89/LU4 i jest to indian.",
+      "status": 200,
+      "matched": true
+    },
+    {
+      "question": "Kto podpisał uchwałę nr 37/WAT/2022 jako Przewodniczący Senatu?",
+      "expected": "płk prof. dr hab. inż. Przemysław WACHULAK",
+      "got": "płk prof. dr hab. inż. Przemysław WACHULAK",
+      "status": 200,
+      "matched": true
+    },
+    {
+      "question": "W jakiej formie prowadzenia studiów dostępna jest administracja publiczna w systemie bezpieczeństwa wewnętrznego według uchwały 106/WAT/2024?",
+      "expected": "W formie stacjonarnej i niestacjonarnej.",
+      "got": "W formie stacjonarnej i niestacjonarnej.",
+      "status": 200,
+      "matched": true
+    },
+    {
+      "question": "Jaką ocenę i liczbę opinii ma Boisko?",
+      "expected": "Boisko ma 5.0 gwiazdki na podstawie 1 recenzji.",
+      "got": "Boisko ma 5.0 gwiazdki na podstawie 1 recenzji.",
+      "status": 200,
+      "matched": true
+    },
+    {
+      "question": "Kiedy uchwała 57/WAT/2024 wchodzi w życie?",
+      "expected": "Z dniem podjęcia",
+      "got": "Z dniem podjęcia",
+      "status": 200,
+      "matched": true
+    },
+    {
+      "question": "Z jakiego dnia pochodzi uchwała nr 47/WAT/2019?",
+      "expected": "27 czerwca 2019 r.",
+      "got": "27 czerwca 2019 r.",
+      "status": 200,
+      "matched": true
+    },
+    {
+      "question": "Jaki jest adres RENEW • reformery • ems • treningi?",
+      "expected": "Dywizjonu 303 161/lok.4",
+      "got": "Dywizjonu 303 161/lok.4",
+      "status": 200,
+      "matched": true
+    },
+    {
+      "question": "Jaką technologię zastosowano w pionierskim połączeniu między WAT a Ministerstwem Cyfryzacji, aby całkowicie zaszyfrować dane?",
+      "expected": "kwantową dystrybucję klucza kryptograficznego",
+      "got": "kwantową dystrybucję klucza kryptograficznego",
+      "status": 200,
+      "matched": true
+    },
+    {
+      "question": "Jaki kierunek studiów opisuje dokument?",
+      "expected": "Bezpieczeństwo narodowe – profil ogólnoakademicki",
+      "got": "Bezpieczeństwo narodowe – profil ogólnoakademicki",
+      "status": 200,
+      "matched": true
+    }
+  ]
+}
