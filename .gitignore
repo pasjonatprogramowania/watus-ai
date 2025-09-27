@@ -2,12 +2,11 @@
 __pycache__/
 *.py[cod]
 *$py.class
-.idea/
+
 # C extensions
 *.so
 /chromadb-admin
 *.ipynb
-
 
 # Distribution / packaging
 dist/
@@ -15,16 +14,15 @@ build/
 *.egg-info/
 *.egg
 .eggs/
-*/chroma_db
-# Virtual environment
 /chroma_db
+*/chroma_db
+
+# Virtual environments
 venv/
 .venv/
+
+# Benchmark / result outputs
 processing_results.json
-
-
-env/
-.env/
 
 # Installer logs
 pip-log.txt
@@ -38,7 +36,7 @@ nosetests.xml
 coverage.xml
 htmlcov/
 
-# MyPy
+# MyPy files
 .mypy_cache/
 .dmypy.json
 dmypy.json
@@ -46,21 +44,25 @@ dmypy.json
 # Pytest
 .pytest_cache/
 
-# Jupyter Notebook
+# Jupyter
 .ipynb_checkpoints
 
-# IDE-specific files
-.vscode/        # VS Code
-.idea/          # PyCharm
+# IDE / editor
+.vscode/
+.idea/
 *.sublime-project
 *.sublime-workspace
-.project        # PyDev
-.pydevproject   # PyDev
-.DS_Store       # macOS specific
+.project
+.pydevproject
+.DS_Store
 
-# Database files
+# Database / local files
 *.sqlite3
 *.db
 
-# Environment variables
+# Environment files
 .env
+# (Usuń linię poniżej, jeśli istniała)
+# .env/
+
+# Note: nie ignorujemy folderu `data/test/` ani pliku questions.jsonl tam

@@ -4,212 +4,212 @@
   "accuracy_percent": 100.0,
   "results": [
     {
-      "question": "Pod jakim dokładnym adresem znajduje się NaŚcieżce.pl - bicycle shop and service i jakiego typu jest to lokal?",
-      "expected": "NaŚcieżce.pl - bicycle shop and service mieści się przy Połczyńska 42 i jest to bicycle store.",
-      "got": "naścieżce.pl - bicycle shop and service mieści się przy połczyńska 42 i jest to bicycle store.",
+      "question": "Która wcześniejsza uchwała traci moc w następstwie przyjęcia uchwały 37/WAT/2022?",
+      "expected": "Uchwała nr 24/WAT/2019.",
+      "got": "Uchwała nr 24/WAT/2019.",
       "status": 200,
       "matched": true
     },
     {
-      "question": "Jakie wartości wymienia regulamin jako fundamentalne cnoty żołnierza?",
-      "expected": "Patriotyzm, męstwo, uczciwość, odpowiedzialność, sprawiedliwość, prawdomówność i solidarność zawodowa.",
-      "got": "patriotyzm, męstwo, uczciwość, odpowiedzialność, sprawiedliwość, prawdomówność i solidarność zawodowa.",
+      "question": "Ile punktów ECTS student musi zdobyć z zajęć prowadzonych z bezpośrednim udziałem nauczycieli akademickich?",
+      "expected": "92 ECTS",
+      "got": "92 ECTS",
       "status": 200,
       "matched": true
     },
     {
-      "question": "Jaki numer ma uchwała zmieniająca warunki rekrutacji na rok akademicki 2023/2024?",
-      "expected": "4/WAT/2023",
-      "got": "4/wat/2023",
+      "question": "Jaki jest średni standard wyposażenia do nauki w akademikach (w skali 1–5)?",
+      "expected": "3",
+      "got": "3",
       "status": 200,
       "matched": true
     },
     {
-      "question": "Ile semestrów obejmują studia pierwszego stopnia bezpieczeństwo narodowe w tym programie?",
-      "expected": "Sześć semestrów",
-      "got": "sześć semestrów",
+      "question": "Która siłownia na Bemowie ma najwyższą ocenę gwiazdkową?",
+      "expected": "Fitness Klub ZDROFIT Bemowo - Dywizjonu 303",
+      "got": "Fitness Klub ZDROFIT Bemowo - Dywizjonu 303",
       "status": 200,
       "matched": true
     },
     {
-      "question": "Co obejmuje definicja ugrupowania w musztrze?",
-      "expected": "Ustawienie żołnierzy, pododdziałów lub oddziałów w szyku odpowiednim do wykonania zadania, frontem w jednym kierunku, w nakazanym szyku i odstępach.",
-      "got": "ustawienie żołnierzy, pododdziałów lub oddziałów w szyku odpowiednim do wykonania zadania, frontem w jednym kierunku, w nakazanym szyku i odstępach.",
+      "question": "Jak nazywa się najlepiej oceniana ze wszystkich sklepów na terenie WAT i jaką ma ocenę oraz liczbę opinii?",
+      "expected": "NaŚcieżce.pl - bicycle shop and service — 4.7 gwiazdek na podstawie 224 opinii.",
+      "got": "NaŚcieżce.pl - bicycle shop and service — 4.7 gwiazdek na podstawie 224 opinii.",
       "status": 200,
       "matched": true
     },
     {
-      "question": "Która dyscyplina naukowa jest wiodąca?",
-      "expected": "Nauki o bezpieczeństwie",
-      "got": "nauki o bezpieczeństwie",
+      "question": "Jakiego rodzaju lokalem jest Well Fitness - Warszawa, Bemowo i jak klienci go oceniają?",
+      "expected": "Well Fitness - Warszawa, Bemowo to gym, oceniany na 4.1/5.",
+      "got": "Well Fitness - Warszawa, Bemowo to gym, oceniany na 4.1/5.",
       "status": 200,
       "matched": true
     },
     {
-      "question": "Kiedy ogłoszona zostanie lista kandydatów przyjętych według uchwały nr 64/WAT/2024?",
-      "expected": "1 sierpnia 2025 r.",
-      "got": "1 sierpnia 2025 r.",
-      "status": 200,
-      "matched": true
-    },
-    {
-      "question": "Podaj pełny tytuł uchwały nr 4/WAT/2023 wraz z datą jej podjęcia.",
-      "expected": "Uchwała Senatu Wojskowej Akademii Technicznej im. Jarosława Dąbrowskiego nr 4/WAT/2023 z dnia 26 stycznia 2023 r.",
-      "got": "uchwała senatu wojskowej akademii technicznej im. jarosława dąbrowskiego nr 4/wat/2023 z dnia 26 stycznia 2023 r.",
-      "status": 200,
-      "matched": true
-    },
-    {
-      "question": "Gdzie na Bemowie zjem lub skorzystam z usług najtaniej według przedziału cen i jak ten przedział wygląda?",
-      "expected": "Najkorzystniej cenowo wypada Kawkadu — przedział cenowy 1-20.",
-      "got": "najkorzystniej cenowo wypada kawkadu — przedział cenowy 1-20.",
-      "status": 200,
-      "matched": true
-    },
-    {
-      "question": "Który z lokali na terenie WAT zebrał najwięcej opinii i ile ich jest?",
-      "expected": "Najwięcej recenzji ma Fitness Klub ZDROFIT Bemowo - Dywizjonu 303 — 1,167 opinii.",
-      "got": "najwięcej recenzji ma fitness klub zdrofit bemowo - dywizjonu 303 — 1,167 opinii.",
-      "status": 200,
-      "matched": true
-    },
-    {
-      "question": "W której z restauracji na WAT klienci zostawili najwięcej opinii?",
-      "expected": "Przystanek Bemowo kuchnia & craft bar",
-      "got": "przystanek bemowo kuchnia & craft bar",
-      "status": 200,
-      "matched": true
-    },
-    {
-      "question": "Jaki jest procentowy podział punktów ECTS między dyscypliny naukowe w programie studiów?",
-      "expected": "90 % ECTS – nauki o bezpieczeństwie; 10 % ECTS – nauki o polityce i administracji",
-      "got": "90 % ects – nauki o bezpieczeństwie; 10 % ects – nauki o polityce i administracji",
-      "status": 200,
-      "matched": true
-    },
-    {
-      "question": "Pod jakim dokładnym adresem znajduje się Zdrofit Zdrowe Miejsce - Bemowo i jakiego typu jest to lokal?",
-      "expected": "Zdrofit Zdrowe Miejsce - Bemowo mieści się przy Dywizjonu 303 129B i jest to physical therapist.",
-      "got": "zdrofit zdrowe miejsce - bemowo mieści się przy dywizjonu 303 129b i jest to physical therapist.",
-      "status": 200,
-      "matched": true
-    },
-    {
-      "question": "Które trzy elementy składają się na proces rekrutacji na kierunek budownictwo i inżynieria cyfrowa w uchwale 7/WAT/2024?",
-      "expected": "Założenie konta IRK, proces rejestracji wraz z wyborem kierunków, oraz postępowanie kwalifikacyjne kończące się wpisaniem na listę studentów.",
-      "got": "założenie konta irk, proces rejestracji wraz z wyborem kierunków, oraz postępowanie kwalifikacyjne kończące się wpisaniem na listę studentów.",
+      "question": "Ile punktów ECTS jest wymagane do ukończenia studiów?",
+      "expected": "180 ECTS",
+      "got": "180 ECTS",
       "status": 200,
       "matched": true
     },
     {
       "question": "Ile semestrów obejmuje program?",
       "expected": "Sześć semestrów",
-      "got": "sześć semestrów",
+      "got": "Sześć semestrów",
       "status": 200,
       "matched": true
     },
     {
-      "question": "Który z lokali na Bemowie zebrał najwięcej opinii i ile ich jest?",
-      "expected": "Najwięcej recenzji ma Trattoria Prima Pasta — 4,282 opinii.",
-      "got": "najwięcej recenzji ma trattoria prima pasta — 4,282 opinii.",
+      "question": "Wymień dwa kierunki jednolitych studiów magisterskich wymienione w uchwale 87/WAT/2023.",
+      "expected": "Geoinformatyka oraz technologie przełomowe.",
+      "got": "Geoinformatyka oraz technologie przełomowe.",
       "status": 200,
       "matched": true
     },
     {
-      "question": "Który z lokali na terenie WAT zebrał najwięcej opinii i ile ich jest?",
-      "expected": "Najwięcej recenzji ma Military University of Technology in Warsaw — 934 opinii.",
-      "got": "najwięcej recenzji ma fitness klub zdrofit bemowo - dywizjonu 303 — 1,167 opinii.",
+      "question": "W jakim języku prowadzone są studia?",
+      "expected": "Polski",
+      "got": "Polski",
       "status": 200,
       "matched": true
     },
     {
-      "question": "W jakim terminie – według uchwały 87/WAT/2023 – kandydaci mogą rejestrować się w systemie IRK?",
-      "expected": "Od 1 kwietnia 2024 r. do 15 lipca 2024 r.",
-      "got": "od 1 kwietnia 2024 r. do 15 lipca 2024 r.",
+      "question": "Jakie zagadnienie reguluje uchwała nr 47/WAT/2019?",
+      "expected": "sposobu potwierdzania efektów uczenia się",
+      "got": "sposobu potwierdzania efektów uczenia się",
       "status": 200,
       "matched": true
     },
     {
-      "question": "Jakie są terminy rozpoczęcia i zakończenia rejestracji kandydatów w systemie IRK według uchwały 87/WAT/2023?",
-      "expected": "Rejestracja rozpoczyna się 1 kwietnia 2024 r. i kończy 15 lipca 2024 r.",
-      "got": "rejestracja rozpoczyna się 1 kwietnia 2024 r. i kończy 15 lipca 2024 r.",
+      "question": "Z jakiego dnia pochodzi uchwała nr 106/WAT/2024?",
+      "expected": "24 października 2024 r.",
+      "got": "24 października 2024 r.",
       "status": 200,
       "matched": true
     },
     {
-      "question": "Jakie kierunki są wyłączone przy Olimpiadzie Fizycznej według uchwały nr 20/WAT/2021?",
-      "expected": "bezpieczeństwo narodowe, obronność państwa, logistyka ekonomiczna oraz zarządzanie",
-      "got": "bezpieczeństwo narodowe, obronność państwa, logistyka ekonomiczna oraz zarządzanie",
+      "question": "Podaj dwie najczęściej wymieniane w ankietach zalety posiadania własnego biurka w pokoju akademika.",
+      "expected": "Każdy student ma własne stanowisko pracy i nie trzeba dzielić biurek z innymi mieszkańcami.",
+      "got": "Każdy student ma własne stanowisko pracy i nie trzeba dzielić biurek z innymi mieszkańcami.",
       "status": 200,
       "matched": true
     },
     {
-      "question": "Kiedy wchodzi w życie Regulamin studiów uchwalony tą uchwałą?",
-      "expected": "1 października 2022 r.",
-      "got": "1 października 2022 r.",
-      "status": 200,
-      "matched": true
-    },
-    {
-      "question": "Jakiej uczelni dotyczy uchwała nr 3/WAT/2023?",
-      "expected": "Wojskowej Akademii Technicznej im. Jarosława Dąbrowskiego",
-      "got": "wojskowej akademii technicznej im. jarosława dąbrowskiego",
+      "question": "Jakie udogodnienie elektryczne wspomniano w odniesieniu do rolet w jednym z akademików i jak wpływa ono na warunki wypoczynku?",
+      "expected": "Rolety zamykane elektrycznie zapewniają dobre warunki do wypoczynku.",
+      "got": "Rolety zamykane elektrycznie zapewniają dobre warunki do wypoczynku.",
       "status": 200,
       "matched": true
     },
     {
       "question": "Jaki jest łączny wymiar praktyk zawodowych i ile punktów ECTS za nie uzyskuje student?",
       "expected": "Praktyka trwa łącznie 4 tygodnie i jest warta 4 ECTS",
-      "got": "praktyka trwa łącznie 4 tygodnie i jest warta 4 ects",
+      "got": "Praktyka trwa łącznie 4 tygodnie i jest warta 4 ECTS",
       "status": 200,
       "matched": true
     },
     {
-      "question": "Którym kandydatom uchwała nr 3/WAT/2025 przyznaje maksymalną liczbę punktów rankingowych i na jaki rok akademicki?",
-      "expected": "Laureatom olimpiad stopnia centralnego; przyznaje im maksymalną liczbę punktów rankingowych w rekrutacji na rok akademicki 2029/2030.",
-      "got": "laureatom olimpiad stopnia centralnego; przyznaje im maksymalną liczbę punktów rankingowych w rekrutacji na rok akademicki 2029/2030.",
+      "question": "Pod jakim dokładnym adresem znajduje się Zdrofit Zdrowe Miejsce - Bemowo i jakiego typu jest to lokal?",
+      "expected": "Zdrofit Zdrowe Miejsce - Bemowo mieści się przy Dywizjonu 303 129B i jest to physical therapist.",
+      "got": "Zdrofit Zdrowe Miejsce - Bemowo mieści się przy Dywizjonu 303 129B i jest to physical therapist.",
       "status": 200,
       "matched": true
     },
     {
-      "question": "Która kawiarnia na Bemowie ma najwyższą ocenę gwiazdkową?",
-      "expected": "CieKawa Cafe",
-      "got": "ciekawa cafe",
+      "question": "Jakiego rodzaju lokalem jest FitnessAtut i jak klienci go oceniają?",
+      "expected": "FitnessAtut to gym, oceniany na 4.8/5.",
+      "got": "FitnessAtut to gym, oceniany na 4.8/5.",
+      "status": 200,
+      "matched": true
+    },
+    {
+      "question": "Wymień trzy kierunki jednolitych studiów magisterskich wymienione w uchwale 64/WAT/2024.",
+      "expected": "Geoinformatyka, budownictwo i inżynieria cyfrowa, technologie przełomowe.",
+      "got": "Geoinformatyka, budownictwo i inżynieria cyfrowa, technologie przełomowe.",
+      "status": 200,
+      "matched": true
+    },
+    {
+      "question": "Na jakim akcie prawnym oparto uchwałę 134/WAT/2020 i do którego roku akademickiego się odnosi?",
+      "expected": "Na ustawie z 20 lipca 2018 r. – Prawo o szkolnictwie wyższym i nauce; dotyczy rekrutacji na rok akademicki 2024/2025.",
+      "got": "Na ustawie z 20 lipca 2018 r. – Prawo o szkolnictwie wyższym i nauce; dotyczy rekrutacji na rok akademicki 2024/2025.",
+      "status": 200,
+      "matched": true
+    },
+    {
+      "question": "Ile wynosi średni czas drogi na zajęcia i stołówki (pieszo)?",
+      "expected": "10–20 minut",
+      "got": "10–20 minut",
+      "status": 200,
+      "matched": true
+    },
+    {
+      "question": "Jakie kierunki studiów wyłączono z przywileju maksymalnych punktów dla laureatów Olimpiady Fizycznej zgodnie z uchwałą 20/WAT/2021?",
+      "expected": "Bezpieczeństwo narodowe, obronność państwa, logistyka ekonomiczna oraz zarządzanie.",
+      "got": "Bezpieczeństwo narodowe, obronność państwa, logistyka ekonomiczna oraz zarządzanie.",
+      "status": 200,
+      "matched": true
+    },
+    {
+      "question": "Pod jakim dokładnym adresem znajduje się Indian Taste Food & Wine Bemowo i jakiego typu jest to lokal?",
+      "expected": "Indian Taste Food & Wine Bemowo mieści się przy Lazurowa 89/LU4 i jest to indian.",
+      "got": "Indian Taste Food & Wine Bemowo mieści się przy Lazurowa 89/LU4 i jest to indian.",
+      "status": 200,
+      "matched": true
+    },
+    {
+      "question": "Kto podpisał uchwałę nr 37/WAT/2022 jako Przewodniczący Senatu?",
+      "expected": "płk prof. dr hab. inż. Przemysław WACHULAK",
+      "got": "płk prof. dr hab. inż. Przemysław WACHULAK",
+      "status": 200,
+      "matched": true
+    },
+    {
+      "question": "W jakiej formie prowadzenia studiów dostępna jest administracja publiczna w systemie bezpieczeństwa wewnętrznego według uchwały 106/WAT/2024?",
+      "expected": "W formie stacjonarnej i niestacjonarnej.",
+      "got": "W formie stacjonarnej i niestacjonarnej.",
       "status": 200,
       "matched": true
     },
     {
       "question": "Jaką ocenę i liczbę opinii ma Boisko?",
       "expected": "Boisko ma 5.0 gwiazdki na podstawie 1 recenzji.",
-      "got": "boisko ma 5.0 gwiazdki na podstawie 1 recenzji.",
+      "got": "Boisko ma 5.0 gwiazdki na podstawie 1 recenzji.",
       "status": 200,
       "matched": true
     },
     {
-      "question": "Jaki tytuł zawodowy uzyskują absolwenci?",
-      "expected": "Licencjat",
-      "got": "licencjat",
+      "question": "Kiedy uchwała 57/WAT/2024 wchodzi w życie?",
+      "expected": "Z dniem podjęcia",
+      "got": "Z dniem podjęcia",
       "status": 200,
       "matched": true
     },
     {
-      "question": "Kto podpisał uchwałę 106/WAT/2024 i jaki nosił wówczas stopień wojskowy?",
-      "expected": "gen. bryg. prof. dr hab. inż. Przemysław WACHULAK.",
-      "got": "gen. bryg. prof. dr hab. inż. przemysław wachulak.",
+      "question": "Z jakiego dnia pochodzi uchwała nr 47/WAT/2019?",
+      "expected": "27 czerwca 2019 r.",
+      "got": "27 czerwca 2019 r.",
       "status": 200,
       "matched": true
     },
     {
-      "question": "Gdzie na Bemowie znajdę restauracjaę z najniższymi cenami?",
-      "expected": "Przystanek Bemowo kuchnia & craft bar",
-      "got": "przystanek bemowo kuchnia & craft bar",
+      "question": "Jaki jest adres RENEW • reformery • ems • treningi?",
+      "expected": "Dywizjonu 303 161/lok.4",
+      "got": "Dywizjonu 303 161/lok.4",
       "status": 200,
       "matched": true
     },
     {
-      "question": "Co trafiło do Wojskowej Akademii Technicznej jako nowe wsparcie dydaktyczne dla studentów lotnictwa?",
-      "expected": "Śmigłowiec W-3 Sokół",
-      "got": "śmigłowiec w-3 sokół",
+      "question": "Jaką technologię zastosowano w pionierskim połączeniu między WAT a Ministerstwem Cyfryzacji, aby całkowicie zaszyfrować dane?",
+      "expected": "kwantową dystrybucję klucza kryptograficznego",
+      "got": "kwantową dystrybucję klucza kryptograficznego",
+      "status": 200,
+      "matched": true
+    },
+    {
+      "question": "Jaki kierunek studiów opisuje dokument?",
+      "expected": "Bezpieczeństwo narodowe – profil ogólnoakademicki",
+      "got": "Bezpieczeństwo narodowe – profil ogólnoakademicki",
       "status": 200,
       "matched": true
     }

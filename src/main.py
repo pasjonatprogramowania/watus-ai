@@ -7,10 +7,13 @@ from typing import Dict, Any
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 
-from src import CURRENT_MODEL, DECISION_VECTOR_SYSTEM_PROMPT, DEFAULT_SYSTEM_PROMPR, \
-    FUNNY_SYSTEM_PROMPT, CHOOSE_ACTION_SYSTEM_PROMPT, CHOOSE_TOOL_SYSTEM_PROMPT, WARNING_SYSTEM_PROMPR, \
-    BASE_API_HOST, BASE_API_PORT, MAIN_PROCESS_QUESTION, MAIN_HEALTH, MAIN_WEBHOOK, CHROMADB_PATH, METADATAS, DOCUMENTS, \
-    ANSWER
+from src import (
+    CURRENT_MODEL, DECISION_VECTOR_SYSTEM_PROMPT, DEFAULT_SYSTEM_PROMPR,
+    FUNNY_SYSTEM_PROMPT, CHOOSE_ACTION_SYSTEM_PROMPT, CHOOSE_TOOL_SYSTEM_PROMPT,
+    WARNING_SYSTEM_PROMPR,
+    BASE_API_HOST, BASE_API_PORT, MAIN_PROCESS_QUESTION, MAIN_HEALTH, MAIN_WEBHOOK,
+    CHROMADB_PATH, METADATAS, DOCUMENTS, ANSWER
+)
 
 from pydantic_ai import Agent
 
@@ -19,11 +22,11 @@ import chromadb
 from chromadb.utils.embedding_functions import DefaultEmbeddingFunction
 from src.vectordb import COLLECTION_NAME
 
-
 TOOL_REQUIRED = "is_tool_required"
 SERIOUS = "is_serious"
 ACTIONS_REQUIRED = "is_actions_required"
 ALLOWED = "is_allowed"
+
 
 class Tool(str, Enum):
     none = "none"
@@ -62,7 +65,7 @@ class Answer(BaseModel):
 def log_llm_response(user_query: str, agent_name: str, response: str, response_time: float):
     print(f"Pytanie: {user_query}")
     print(f"Agent: {agent_name}")
-    print(f"Odpowiedz: {response}")
+    print(f"Odpowiedz (agent): {response}")
     print(f"Czas odpowiedzi: {response_time:.3f} sekund")
     print("-" * 50)
 
@@ -101,17 +104,20 @@ def _answer_from_chroma(question: str) -> str | None:
     res = col.query(query_texts=[question], n_results=1)
     metas = res.get(METADATAS) or []
     docs = res.get(DOCUMENTS) or []
-    # Try to get answer from metadata first (if you stored it there), else from document text
+    print(f"[_answer_from_chroma] metas={metas}, docs={docs}")  # log
     if metas and metas[0] and ANSWER in metas[0][0]:
+        print(f"[ _answer_from_chroma ] answer from metas: {metas[0][0][ANSWER]}")
         return metas[0][0][ANSWER]
     if docs and docs[0]:
         try:
             obj = json.loads(docs[0][0])
-            # If your jsonl lines are {"question": ..., "answer": ...}
             if isinstance(obj, dict) and ANSWER in obj:
+                print(f"[ _answer_from_chroma ] answer from doc JSON: {obj[ANSWER]}")
                 return obj[ANSWER]
-        except Exception:
+        except Exception as e:
+            print(f"Exception loading JSON from docs[0][0]: {e}")
             return docs[0][0]
+    print("[ _answer_from_chroma ] no answer found")
     return None
 
 
@@ -126,27 +132,27 @@ def get_decision_vector(content: str) -> DecisionVector:
 
 def handle_default_response(content: str, decision_data: dict[str, bool]) -> str:
     decision_data_s = json.dumps(decision_data)
-    content = content + decision_data_s
+    content2 = content + decision_data_s
     response, _ = run_agent_with_logging(
-        content, "default_agent", DEFAULT_SYSTEM_PROMPR, str
+        content2, "default_agent", DEFAULT_SYSTEM_PROMPR, str
     )
     return response
 
 
 def handle_warning_response(content: str, decision_data: dict[str, bool]) -> str:
     decision_data_s = json.dumps(decision_data)
-    content = content + decision_data_s
+    content2 = content + decision_data_s
     response, _ = run_agent_with_logging(
-        content, "warning_agent", WARNING_SYSTEM_PROMPR, str
+        content2, "warning_agent", WARNING_SYSTEM_PROMPR, str
     )
     return response
 
 
 def handle_funny_response(content: str, decision_data: dict[str, bool]) -> str:
     decision_data_s = json.dumps(decision_data)
-    content = content + decision_data_s
+    content2 = content + decision_data_s
     response, _ = run_agent_with_logging(
-        content, "funny_agent", FUNNY_SYSTEM_PROMPT, str
+        content2, "funny_agent", FUNNY_SYSTEM_PROMPT, str
     )
     return response
 
@@ -166,13 +172,15 @@ def handle_action_selection(content: str) -> str:
 
 
 def use_tool(question: str, dane: dict) -> str:
-    """Używa wybranego narzędzia do odpowiedzi na pytanie."""
     tool = dane.get("tool")
+    print(f"[use_tool] tool={tool}, question={question}")
     if tool in (Tool.watoznawca, Tool.search_google):
         ans = _answer_from_chroma(question)
+        print(f"[use_tool] answer from chroma: {ans}")
         if ans:
             return ans
         return "Nie znalazłem jednoznacznej odpowiedzi w lokalnej bazie."
+    print(f"[use_tool] unknown tool: {tool}")
     return "Nieznane narzędzie."
 
 
@@ -180,7 +188,9 @@ def handle_tool_selection(content: str) -> str:
     selected_tool, _ = run_agent_with_logging(
         content, "tool_agent", CHOOSE_TOOL_SYSTEM_PROMPT, Tool
     )
-    return use_tool(content, {"tool": selected_tool})
+    ans = use_tool(content, {"tool": selected_tool})
+    print(f"[handle_tool_selection] selected_tool={selected_tool}, ans={ans}")
+    return ans
 
 
 # ---------- API ----------
@@ -195,7 +205,6 @@ app = FastAPI(
 def process_question(content: str) -> Answer:
     try:
         decision_vector = get_decision_vector(content)
-
         decision_data = {
             ALLOWED: decision_vector.is_allowed,
             ACTIONS_REQUIRED: decision_vector.is_actions_required,
@@ -205,24 +214,33 @@ def process_question(content: str) -> Answer:
 
         if not decision_vector.is_allowed:
             response = handle_warning_response(content, decision_data)
+            print(f"[process_question] disallowed → {response}")
             return Answer(answer=response, decisionVector=decision_vector)
 
         if not decision_vector.is_serious:
             response = handle_funny_response(content, decision_data)
+            print(f"[process_question] not serious → {response}")
             return Answer(answer=response, decisionVector=decision_vector)
 
         if decision_vector.is_actions_required:
             response = handle_action_selection(content)
+            print(f"[process_question] action required → {response}")
             return Answer(answer=response, decisionVector=decision_vector)
 
         if decision_vector.is_tool_required:
             response = handle_tool_selection(content)
+            print(f"[process_question] tool answer → {response}")
             return Answer(decisionVector=decision_vector, answer=response)
         else:
             response = handle_default_response(content, decision_data)
+            print(f"[process_question] default answer → {response}")
             return Answer(decisionVector=decision_vector, answer=response)
 
     except Exception as e:
+        import traceback
+        tb = traceback.format_exc()
+        print("=== process_question exception ===")
+        print(tb)
         raise HTTPException(status_code=500, detail=f"Error in processing: {str(e)}")
 
 
@@ -244,6 +262,7 @@ def webhook(payload: Dict[str, Any]):
 @app.get(MAIN_HEALTH)
 def health():
     return {"ok": True}
+
 
 @app.get("/debug/search")
 def debug_search(q: str):

@@ -41,8 +41,8 @@ LOGS_DIR = PROJECT_ROOT / "logs"
 CONFIG_DIR = PROJECT_ROOT / "config"
 TESTS_DIR = PROJECT_ROOT / "tests"
 ENV_FILE = PROJECT_ROOT / ".env"
-CHROMADB_PATH = PROJECT_ROOT / "chroma_db"
-QUESTION_FILES_PATH = DATA_DIR / QUESTIONS_JSONL
+CHROMADB_PATH = str(PROJECT_ROOT / "chroma_db")
+QUESTION_FILES_PATH = DATA_DIR / "test" / "questions.jsonl"
 def ensure_dir_exists(path: pathlib.Path) -> pathlib.Path:
     """Tworzy katalog jeśli nie istnieje i zwraca ścieżkę."""
     path.mkdir(parents=True, exist_ok=True)
