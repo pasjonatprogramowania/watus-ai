@@ -1,0 +1,49 @@
+INFO:     Started server process [10700]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8001 (Press CTRL+C to quit)
+2025-12-03 13:18:33,537 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent "HTTP/1.1 200 OK"
+2025-12-03 13:18:33,603 - chromadb.telemetry.product.posthog - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-12-03 13:18:34,487 - src.vectordb - INFO - Vector search performed for query: My name is Pawel and I am testing the EMMA memory system.
+2025-12-03 13:18:34,487 - __main__ - INFO - Search Results Found: 3 documents
+2025-12-03 13:18:34,487 - __main__ - INFO - Vector search completed successfully
+2025-12-03 13:18:35,653 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent "HTTP/1.1 200 OK"
+Pytanie: My name is Pawel and I am testing the EMMA memory system.
+Agent: decision_vector_agent
+Odpowiedz: is_allowed=True is_actions_required=False is_serious=True is_tool_required='google'
+Czas odpowiedzi: 0.955 sekund
+--------------------------------------------------
+INFO:     127.0.0.1:53293 - "POST /api1/process_question HTTP/1.1" 200 OK
+2025-12-03 13:18:46,338 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent "HTTP/1.1 200 OK"
+2025-12-03 13:18:46,667 - src.vectordb - INFO - Vector search performed for query: What is my name and what am I doing?
+2025-12-03 13:18:46,667 - __main__ - INFO - Search Results Found: 3 documents
+2025-12-03 13:18:46,668 - __main__ - INFO - Vector search completed successfully
+2025-12-03 13:18:47,459 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent "HTTP/1.1 200 OK"
+Pytanie: What is my name and what am I doing?
+Agent: decision_vector_agent
+Odpowiedz: is_allowed=True is_actions_required=False is_serious=True is_tool_required='google'
+Czas odpowiedzi: 0.678 sekund
+--------------------------------------------------
+INFO:     127.0.0.1:60797 - "POST /api1/process_question HTTP/1.1" 200 OK
+2025-12-03 13:19:56,868 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent "HTTP/1.1 200 OK"
+2025-12-03 13:19:57,249 - src.vectordb - INFO - Vector search performed for query: My name is Pawel and I am testing the EMMA memory system.
+2025-12-03 13:19:57,249 - __main__ - INFO - Search Results Found: 3 documents
+2025-12-03 13:19:57,249 - __main__ - INFO - Vector search completed successfully
+2025-12-03 13:19:58,157 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent "HTTP/1.1 200 OK"
+Pytanie: My name is Pawel and I am testing the EMMA memory system.
+Agent: decision_vector_agent
+Odpowiedz: is_allowed=True is_actions_required=False is_serious=True is_tool_required='google'
+Czas odpowiedzi: 1.050 sekund
+--------------------------------------------------
+INFO:     127.0.0.1:65275 - "POST /api1/process_question HTTP/1.1" 200 OK
+2025-12-03 13:20:09,147 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent "HTTP/1.1 200 OK"
+2025-12-03 13:20:09,433 - src.vectordb - INFO - Vector search performed for query: What is my name and what am I doing?
+2025-12-03 13:20:09,433 - __main__ - INFO - Search Results Found: 3 documents
+2025-12-03 13:20:09,433 - __main__ - INFO - Vector search completed successfully
+2025-12-03 13:20:10,375 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent "HTTP/1.1 200 OK"
+Pytanie: What is my name and what am I doing?
+Agent: decision_vector_agent
+Odpowiedz: is_allowed=True is_actions_required=False is_serious=True is_tool_required='google'
+Czas odpowiedzi: 0.974 sekund
+--------------------------------------------------
+INFO:     127.0.0.1:65282 - "POST /api1/process_question HTTP/1.1" 200 OK
