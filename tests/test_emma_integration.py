@@ -2,7 +2,7 @@ import requests
 import json
 import time
 
-BASE_URL = "http://localhost:8001"
+BASE_URL = "http://localhost:8000"
 
 def test_emma_flow():
     print("=== Testing EMMA Integration ===")
@@ -16,7 +16,7 @@ def test_emma_flow():
         print(f"[AI]: {response1.json()['answer']}")
     else:
         print(f"Error: {response1.text}")
-        return
+        input("Press Enter to exit...")
 
     # Wait for background consolidation (simulated by sleep if async, but here it's sync so strictly not needed, but good practice)
     print("\n... Waiting for memory consolidation (10s) ...")
@@ -36,8 +36,11 @@ def test_emma_flow():
             print("\n[SUCCESS] Memory successfully retrieved!")
         else:
             print(f"\n[FAILURE] Memory not found in response. Answer was: '{answer}'")
+            input("Press Enter to exit...")
     else:
         print(f"Error: {response2.text}")
+        input("Press Enter to exit...")
 
 if __name__ == "__main__":
     test_emma_flow()
+    

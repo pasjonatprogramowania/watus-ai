@@ -7,8 +7,9 @@ __pycache__/
 *.so
 /chromadb-admin
 *.ipynb
-
-
+.idea/
+qdrant_mem0_data
+venv-linux
 # Distribution / packaging
 dist/
 build/
