@@ -1,0 +1,174 @@
+2025-12-14 15:41:01,969 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent "HTTP/1.1 200 OK"
+2025-12-14 15:41:02,901 - chromadb.telemetry.product.posthog - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-12-14 15:41:05,715 - src.vectordb - INFO - Vector search performed for query: [SYS_TIME=1765723260.886] [SCENARIO=konferencja_pokazowa] [CAMERA=cam_front] [SESSION=live_1765723245] [GROUP=leader_1765723255079] [SPEECH=1765723248.904-1765723255.079s ~-38.5dBFS] [LEADER_SCORE=None] [VISION LAST=none | WIN=none] USER: Witam się. Hej, Batusiu. Jak się pogoda?
+2025-12-14 15:41:05,716 - src.main - INFO - Search Results Found: 3 documents
+2025-12-14 15:41:05,716 - src.main - INFO - Vector search completed successfully
+2025-12-14 15:41:05,719 - src.emma - INFO - mem0: Retrieving memories for user default_user with query: [SYS_TIME=1765723260.886] [SCENARIO=konferencja_pokazowa] [CAMERA=cam_front] [SESSION=live_1765723245] [GROUP=leader_1765723255079] [SPEECH=1765723248.904-1765723255.079s ~-38.5dBFS] [LEADER_SCORE=None] [VISION LAST=none | WIN=none] USER: Witam się. Hej, Batusiu. Jak się pogoda?
+Informacje z bazy wektorowej: {"question": "Ilu studentów kształci się obecnie w WAT?", "answer": "W ostatnich latach liczba studentów Akademii utrzymuje się na wysokim poziomie i wynosi około 9200 osób."}{"question": "Kiedy ukazał się dekret określający pełną nazwę uczelni?", "answer": "Dekret określający pełną nazwę powstającej uczelni – Wojskowa Akademia Techniczna im. Jarosława Dąbrowskiego – ukazał się 18 lipca 1951 roku."}{"question": "W którym roku przekształcono WAT w uczelnię wojskowo-cywilną?", "answer": "W 2003 roku przekształcono Wojskową Akademię Techniczną w wojskowo-cywilną uczelnię techniczną."}
+2025-12-14 15:41:11,054 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2025-12-14 15:41:11,234 - google_genai._api_client - WARNING - Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2025-12-14 15:41:11,326 - mem0.vector_stores.qdrant - INFO - Inserting 1 vectors into collection mem0migrations
+2025-12-14 15:41:11,391 - src.emma - INFO - mem0 Memory initialized successfully with Gemini.
+2025-12-14 15:41:12,251 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:batchEmbedContents "HTTP/1.1 200 OK"
+2025-12-14 15:41:12,255 - src.emma - INFO - mem0: Search results: {'results': []}
+2025-12-14 15:41:12,256 - src.emma - INFO - mem0: No memories found.
+2025-12-14 15:41:13,119 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent "HTTP/1.1 200 OK"
+2025-12-14 15:41:13,125 - src.emma - INFO - mem0: Consolidating memory for user default_user
+2025-12-14 15:41:13,126 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2025-12-14 15:41:14,250 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent "HTTP/1.1 200 OK"
+2025-12-14 15:41:14,913 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:batchEmbedContents "HTTP/1.1 200 OK"
+2025-12-14 15:41:15,073 - mem0.memory.main - INFO - Total existing memories: 0
+2025-12-14 15:41:15,074 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2025-12-14 15:41:15,922 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent "HTTP/1.1 200 OK"
+2025-12-14 15:41:15,925 - mem0.memory.main - INFO - {'id': '0', 'text': 'Pozdrowienia dla Batusia', 'event': 'ADD'}
+2025-12-14 15:41:20,875 - mem0.vector_stores.qdrant - INFO - Inserting 1 vectors into collection watus_memory
+2025-12-14 15:41:20,933 - src.emma - INFO - mem0: Memory consolidation result: {'results': [{'id': '35e4a458-728c-4320-b728-62b8c797cf54', 'memory': 'Pozdrowienia dla Batusia', 'event': 'ADD'}]}
+2025-12-14 15:43:24,827 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent "HTTP/1.1 200 OK"
+2025-12-14 15:43:25,175 - src.vectordb - INFO - Vector search performed for query: [SYS_TIME=1765723403.987] [SCENARIO=konferencja_pokazowa] [CAMERA=cam_front] [SESSION=live_1765723367] [GROUP=leader_1765723399553] [SPEECH=1765723396.818-1765723399.553s ~-38.4dBFS] [LEADER_SCORE=None] [VISION LAST=none | WIN=none] USER: Hej Batusiu, jaka jest dzisiaj pogoda?
+2025-12-14 15:43:25,175 - src.main - INFO - Search Results Found: 3 documents
+2025-12-14 15:43:25,175 - src.main - INFO - Vector search completed successfully
+2025-12-14 15:43:25,176 - src.emma - INFO - mem0: Retrieving memories for user default_user with query: [SYS_TIME=1765723403.987] [SCENARIO=konferencja_pokazowa] [CAMERA=cam_front] [SESSION=live_1765723367] [GROUP=leader_1765723399553] [SPEECH=1765723396.818-1765723399.553s ~-38.4dBFS] [LEADER_SCORE=None] [VISION LAST=none | WIN=none] USER: Hej Batusiu, jaka jest dzisiaj pogoda?
+Informacje z bazy wektorowej: {"question": "Jaki jest status WAT w strukturze Sił Zbrojnych RP?", "answer": "WAT jest wiodącą uczelnią w Siłach Zbrojnych Rzeczypospolitej Polskiej."}{"question": "W którym roku przekształcono WAT w uczelnię wojskowo-cywilną?", "answer": "W 2003 roku przekształcono Wojskową Akademię Techniczną w wojskowo-cywilną uczelnię techniczną."}{"question": "W którym roku przeprowadzono najważniejszą reorganizację uczelni tworząc strukturę wydziałową?", "answer": "W 1959 roku przeprowadzono najważniejszą reorganizację uczelni, tworząc typową dla politechniki strukturę wydziałową."}
+2025-12-14 15:43:25,705 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:batchEmbedContents "HTTP/1.1 200 OK"
+2025-12-14 15:43:25,710 - src.emma - INFO - mem0: Search results: {'results': [{'id': '35e4a458-728c-4320-b728-62b8c797cf54', 'memory': 'Pozdrowienia dla Batusia', 'hash': '16fa2fecdf0137de599c416872f0a565', 'metadata': None, 'score': 0.528978935163651, 'created_at': '2025-12-14T06:41:20.875538-08:00', 'updated_at': None, 'user_id': 'default_user'}]}
+2025-12-14 15:43:25,710 - src.emma - INFO - mem0: Returning memory context: MEMORY CONTEXT (from previous conversations with this user):
+- Pozdrowienia dla Batusia
+
+2025-12-14 15:43:26,479 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent "HTTP/1.1 200 OK"
+2025-12-14 15:43:26,483 - src.emma - INFO - mem0: Consolidating memory for user default_user
+2025-12-14 15:43:26,484 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2025-12-14 15:43:27,607 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent "HTTP/1.1 200 OK"
+2025-12-14 15:43:28,002 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:batchEmbedContents "HTTP/1.1 200 OK"
+2025-12-14 15:43:28,006 - mem0.memory.main - INFO - Total existing memories: 1
+2025-12-14 15:43:28,006 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2025-12-14 15:43:28,926 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent "HTTP/1.1 200 OK"
+2025-12-14 15:43:28,929 - mem0.memory.main - INFO - {'id': '0', 'text': 'Pozdrowienia dla Batusia', 'event': 'NONE'}
+2025-12-14 15:43:28,929 - mem0.memory.main - INFO - NOOP for Memory.
+2025-12-14 15:43:28,987 - src.emma - INFO - mem0: Memory consolidation result: {'results': []}
+2025-12-14 15:46:16,972 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent "HTTP/1.1 200 OK"
+2025-12-14 15:46:17,323 - src.vectordb - INFO - Vector search performed for query: [SYS_TIME=1765723575.724] [SCENARIO=konferencja_pokazowa] [CAMERA=cam_front] [SESSION=live_1765723564] [GROUP=leader_1765723573016] [SPEECH=1765723568.431-1765723573.016s ~-38.8dBFS] [LEADER_SCORE=None] [VISION LAST=none | WIN=none] USER: Dzień dobry. Hej, Watusiu. Jaka jest dzisiaj pogoda?
+2025-12-14 15:46:17,324 - src.main - INFO - Search Results Found: 3 documents
+2025-12-14 15:46:17,324 - src.main - INFO - Vector search completed successfully
+2025-12-14 15:46:17,324 - src.emma - INFO - mem0: Retrieving memories for user default_user with query: [SYS_TIME=1765723575.724] [SCENARIO=konferencja_pokazowa] [CAMERA=cam_front] [SESSION=live_1765723564] [GROUP=leader_1765723573016] [SPEECH=1765723568.431-1765723573.016s ~-38.8dBFS] [LEADER_SCORE=None] [VISION LAST=none | WIN=none] USER: Dzień dobry. Hej, Watusiu. Jaka jest dzisiaj pogoda?
+Informacje z bazy wektorowej: {"question": "Jaki jest status WAT w strukturze Sił Zbrojnych RP?", "answer": "WAT jest wiodącą uczelnią w Siłach Zbrojnych Rzeczypospolitej Polskiej."}{"question": "Ile wydziałów utworzono w wyniku reorganizacji w 1959 roku?", "answer": "W 1959 roku utworzono cztery wydziały: Wydział Mechaniczny, Wydział Elektromechaniczny, Wydział Inżynierii Wojskowej i Geodezji oraz Wydział Chemii Wojskowej."}{"question": "Kiedy ukazał się dekret określający pełną nazwę uczelni?", "answer": "Dekret określający pełną nazwę powstającej uczelni – Wojskowa Akademia Techniczna im. Jarosława Dąbrowskiego – ukazał się 18 lipca 1951 roku."}
+2025-12-14 15:46:18,049 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:batchEmbedContents "HTTP/1.1 200 OK"
+2025-12-14 15:46:18,054 - src.emma - INFO - mem0: Search results: {'results': [{'id': '35e4a458-728c-4320-b728-62b8c797cf54', 'memory': 'Pozdrowienia dla Batusia', 'hash': '16fa2fecdf0137de599c416872f0a565', 'metadata': None, 'score': 0.5051218571897818, 'created_at': '2025-12-14T06:41:20.875538-08:00', 'updated_at': None, 'user_id': 'default_user'}]}
+2025-12-14 15:46:18,054 - src.emma - INFO - mem0: Returning memory context: MEMORY CONTEXT (from previous conversations with this user):
+- Pozdrowienia dla Batusia
+
+2025-12-14 15:46:18,760 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent "HTTP/1.1 200 OK"
+2025-12-14 15:46:18,764 - src.emma - INFO - mem0: Consolidating memory for user default_user
+2025-12-14 15:46:18,765 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2025-12-14 15:46:19,985 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent "HTTP/1.1 200 OK"
+2025-12-14 15:46:20,391 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:batchEmbedContents "HTTP/1.1 200 OK"
+2025-12-14 15:46:20,395 - mem0.memory.main - INFO - Total existing memories: 1
+2025-12-14 15:46:20,395 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2025-12-14 15:46:22,018 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent "HTTP/1.1 200 OK"
+2025-12-14 15:46:22,019 - mem0.memory.main - INFO - {'id': '0', 'text': 'Pozdrowienia dla Batusia', 'event': 'NONE'}
+2025-12-14 15:46:22,021 - mem0.memory.main - INFO - NOOP for Memory.
+2025-12-14 15:46:22,069 - src.emma - INFO - mem0: Memory consolidation result: {'results': []}
+2025-12-14 15:46:56,864 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent "HTTP/1.1 200 OK"
+2025-12-14 15:46:57,205 - src.vectordb - INFO - Vector search performed for query: [SYS_TIME=1765723615.959] [SCENARIO=konferencja_pokazowa] [CAMERA=cam_front] [SESSION=live_1765723564] [GROUP=leader_1765723613499] [SPEECH=1765723610.890-1765723613.499s ~-38.3dBFS] [LEADER_SCORE=None] [VISION LAST=none | WIN=none] USER: Hej watuszu, Jaka jest dzisiaj pogoda?
+2025-12-14 15:46:57,205 - src.main - INFO - Search Results Found: 3 documents
+2025-12-14 15:46:57,205 - src.main - INFO - Vector search completed successfully
+2025-12-14 15:46:57,206 - src.emma - INFO - mem0: Retrieving memories for user default_user with query: [SYS_TIME=1765723615.959] [SCENARIO=konferencja_pokazowa] [CAMERA=cam_front] [SESSION=live_1765723564] [GROUP=leader_1765723613499] [SPEECH=1765723610.890-1765723613.499s ~-38.3dBFS] [LEADER_SCORE=None] [VISION LAST=none | WIN=none] USER: Hej watuszu, Jaka jest dzisiaj pogoda?
+Informacje z bazy wektorowej: {"question": "Jaki jest status WAT w strukturze Sił Zbrojnych RP?", "answer": "WAT jest wiodącą uczelnią w Siłach Zbrojnych Rzeczypospolitej Polskiej."}{"question": "W którym roku przekształcono WAT w uczelnię wojskowo-cywilną?", "answer": "W 2003 roku przekształcono Wojskową Akademię Techniczną w wojskowo-cywilną uczelnię techniczną."}{"question": "Ile wydziałów utworzono w wyniku reorganizacji w 1959 roku?", "answer": "W 1959 roku utworzono cztery wydziały: Wydział Mechaniczny, Wydział Elektromechaniczny, Wydział Inżynierii Wojskowej i Geodezji oraz Wydział Chemii Wojskowej."}
+2025-12-14 15:46:57,934 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:batchEmbedContents "HTTP/1.1 200 OK"
+2025-12-14 15:46:57,938 - src.emma - INFO - mem0: Search results: {'results': [{'id': '35e4a458-728c-4320-b728-62b8c797cf54', 'memory': 'Pozdrowienia dla Batusia', 'hash': '16fa2fecdf0137de599c416872f0a565', 'metadata': None, 'score': 0.4959099288807126, 'created_at': '2025-12-14T06:41:20.875538-08:00', 'updated_at': None, 'user_id': 'default_user'}]}
+2025-12-14 15:46:57,938 - src.emma - INFO - mem0: Returning memory context: MEMORY CONTEXT (from previous conversations with this user):
+- Pozdrowienia dla Batusia
+
+2025-12-14 15:46:58,686 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent "HTTP/1.1 200 OK"
+2025-12-14 15:46:58,690 - src.emma - INFO - mem0: Consolidating memory for user default_user
+2025-12-14 15:46:58,691 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2025-12-14 15:46:59,812 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent "HTTP/1.1 200 OK"
+2025-12-14 15:47:00,198 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:batchEmbedContents "HTTP/1.1 200 OK"
+2025-12-14 15:47:00,203 - mem0.memory.main - INFO - Total existing memories: 1
+2025-12-14 15:47:00,203 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2025-12-14 15:47:01,637 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent "HTTP/1.1 200 OK"
+2025-12-14 15:47:01,641 - mem0.memory.main - INFO - {'id': '0', 'text': 'Pozdrowienia dla Batusia', 'event': 'NONE'}
+2025-12-14 15:47:01,642 - mem0.memory.main - INFO - NOOP for Memory.
+2025-12-14 15:47:01,645 - mem0.memory.main - INFO - {'id': '1', 'text': 'Zapytał o pogodę', 'event': 'ADD'}
+2025-12-14 15:47:01,646 - mem0.vector_stores.qdrant - INFO - Inserting 1 vectors into collection watus_memory
+2025-12-14 15:47:01,711 - src.emma - INFO - mem0: Memory consolidation result: {'results': [{'id': '4bd5a29c-5ebe-4bff-8c4f-1bf5d4d3e9c2', 'memory': 'Zapytał o pogodę', 'event': 'ADD'}]}
+2025-12-14 15:56:40,386 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent "HTTP/1.1 200 OK"
+2025-12-14 15:56:40,695 - src.vectordb - INFO - Vector search performed for query: [SYS_TIME=1765724199.538] [SCENARIO=konferencja_pokazowa] [CAMERA=cam_front] [SESSION=live_1765724141] [GROUP=leader_1765724196735] [SPEECH=1765724194.008-1765724196.735s ~-39.4dBFS] [LEADER_SCORE=None] [VISION LAST=none | WIN=none] USER: Hej, Watusił. Jaka jest dzisiaj kodowa?
+2025-12-14 15:56:40,696 - src.main - INFO - Search Results Found: 3 documents
+2025-12-14 15:56:40,696 - src.main - INFO - Vector search completed successfully
+2025-12-14 15:56:40,697 - src.emma - INFO - mem0: Retrieving memories for user default_user with query: [SYS_TIME=1765724199.538] [SCENARIO=konferencja_pokazowa] [CAMERA=cam_front] [SESSION=live_1765724141] [GROUP=leader_1765724196735] [SPEECH=1765724194.008-1765724196.735s ~-39.4dBFS] [LEADER_SCORE=None] [VISION LAST=none | WIN=none] USER: Hej, Watusił. Jaka jest dzisiaj kodowa?
+Informacje z bazy wektorowej: {"question": "Jaki jest status WAT w strukturze Sił Zbrojnych RP?", "answer": "WAT jest wiodącą uczelnią w Siłach Zbrojnych Rzeczypospolitej Polskiej."}{"question": "Ile wydziałów utworzono w wyniku reorganizacji w 1959 roku?", "answer": "W 1959 roku utworzono cztery wydziały: Wydział Mechaniczny, Wydział Elektromechaniczny, Wydział Inżynierii Wojskowej i Geodezji oraz Wydział Chemii Wojskowej."}{"question": "Kiedy ukazał się dekret określający pełną nazwę uczelni?", "answer": "Dekret określający pełną nazwę powstającej uczelni – Wojskowa Akademia Techniczna im. Jarosława Dąbrowskiego – ukazał się 18 lipca 1951 roku."}
+2025-12-14 15:56:41,497 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:batchEmbedContents "HTTP/1.1 200 OK"
+2025-12-14 15:56:41,503 - src.emma - INFO - mem0: Search results: {'results': [{'id': '4bd5a29c-5ebe-4bff-8c4f-1bf5d4d3e9c2', 'memory': 'Zapytał o pogodę', 'hash': '34da92c5a405a1caf0e8644e059290e7', 'metadata': None, 'score': 0.5557769701498417, 'created_at': '2025-12-14T06:47:01.646489-08:00', 'updated_at': None, 'user_id': 'default_user'}, {'id': '35e4a458-728c-4320-b728-62b8c797cf54', 'memory': 'Pozdrowienia dla Batusia', 'hash': '16fa2fecdf0137de599c416872f0a565', 'metadata': None, 'score': 0.5013528519681, 'created_at': '2025-12-14T06:41:20.875538-08:00', 'updated_at': None, 'user_id': 'default_user'}]}
+2025-12-14 15:56:41,503 - src.emma - INFO - mem0: Returning memory context: MEMORY CONTEXT (from previous conversations with this user):
+- Zapytał o pogodę
+- Pozdrowienia dla Batusia
+
+2025-12-14 15:56:42,353 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent "HTTP/1.1 200 OK"
+2025-12-14 15:56:42,357 - src.emma - INFO - mem0: Consolidating memory for user default_user
+2025-12-14 15:56:42,359 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2025-12-14 15:56:43,422 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent "HTTP/1.1 200 OK"
+2025-12-14 15:56:43,793 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:batchEmbedContents "HTTP/1.1 200 OK"
+2025-12-14 15:56:44,149 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:batchEmbedContents "HTTP/1.1 200 OK"
+2025-12-14 15:56:44,154 - mem0.memory.main - INFO - Total existing memories: 2
+2025-12-14 15:56:44,154 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2025-12-14 15:56:45,212 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent "HTTP/1.1 200 OK"
+2025-12-14 15:56:45,215 - mem0.memory.main - INFO - {'id': '0', 'text': 'Pozdrowienia dla Batusia', 'event': 'NONE'}
+2025-12-14 15:56:45,215 - mem0.memory.main - INFO - NOOP for Memory.
+2025-12-14 15:56:45,215 - mem0.memory.main - INFO - {'id': '1', 'text': 'Zapytał o pogodę', 'event': 'NONE'}
+2025-12-14 15:56:45,215 - mem0.memory.main - INFO - NOOP for Memory.
+2025-12-14 15:56:45,262 - src.emma - INFO - mem0: Memory consolidation result: {'results': []}
+2025-12-14 16:00:19,474 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent "HTTP/1.1 200 OK"
+2025-12-14 16:00:19,816 - src.vectordb - INFO - Vector search performed for query: [SYS_TIME=1765724418.405] [SCENARIO=konferencja_pokazowa] [CAMERA=cam_front] [SESSION=live_1765724392] [GROUP=leader_1765724415844] [SPEECH=1765724413.584-1765724415.844s ~-39.8dBFS] [LEADER_SCORE=None] [VISION LAST=none | WIN=none] USER: Hej Batuszu, jaka jest się pogoda?
+2025-12-14 16:00:19,816 - src.main - INFO - Search Results Found: 3 documents
+2025-12-14 16:00:19,817 - src.main - INFO - Vector search completed successfully
+2025-12-14 16:00:19,818 - src.emma - INFO - mem0: Retrieving memories for user default_user with query: [SYS_TIME=1765724418.405] [SCENARIO=konferencja_pokazowa] [CAMERA=cam_front] [SESSION=live_1765724392] [GROUP=leader_1765724415844] [SPEECH=1765724413.584-1765724415.844s ~-39.8dBFS] [LEADER_SCORE=None] [VISION LAST=none | WIN=none] USER: Hej Batuszu, jaka jest się pogoda?
+Informacje z bazy wektorowej: {"question": "Jaki jest status WAT w strukturze Sił Zbrojnych RP?", "answer": "WAT jest wiodącą uczelnią w Siłach Zbrojnych Rzeczypospolitej Polskiej."}{"question": "Kiedy ukazał się dekret określający pełną nazwę uczelni?", "answer": "Dekret określający pełną nazwę powstającej uczelni – Wojskowa Akademia Techniczna im. Jarosława Dąbrowskiego – ukazał się 18 lipca 1951 roku."}{"question": "W którym roku przeprowadzono najważniejszą reorganizację uczelni tworząc strukturę wydziałową?", "answer": "W 1959 roku przeprowadzono najważniejszą reorganizację uczelni, tworząc typową dla politechniki strukturę wydziałową."}
+2025-12-14 16:00:20,588 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:batchEmbedContents "HTTP/1.1 200 OK"
+2025-12-14 16:00:20,593 - src.emma - INFO - mem0: Search results: {'results': [{'id': '4bd5a29c-5ebe-4bff-8c4f-1bf5d4d3e9c2', 'memory': 'Zapytał o pogodę', 'hash': '34da92c5a405a1caf0e8644e059290e7', 'metadata': None, 'score': 0.5673073064841184, 'created_at': '2025-12-14T06:47:01.646489-08:00', 'updated_at': None, 'user_id': 'default_user'}, {'id': '35e4a458-728c-4320-b728-62b8c797cf54', 'memory': 'Pozdrowienia dla Batusia', 'hash': '16fa2fecdf0137de599c416872f0a565', 'metadata': None, 'score': 0.5103229287369933, 'created_at': '2025-12-14T06:41:20.875538-08:00', 'updated_at': None, 'user_id': 'default_user'}]}
+2025-12-14 16:00:20,595 - src.emma - INFO - mem0: Returning memory context: MEMORY CONTEXT (from previous conversations with this user):
+- Zapytał o pogodę
+- Pozdrowienia dla Batusia
+
+2025-12-14 16:00:21,265 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent "HTTP/1.1 200 OK"
+2025-12-14 16:00:21,269 - src.emma - INFO - mem0: Consolidating memory for user default_user
+2025-12-14 16:00:21,271 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2025-12-14 16:00:22,343 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent "HTTP/1.1 200 OK"
+2025-12-14 16:00:22,671 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:batchEmbedContents "HTTP/1.1 200 OK"
+2025-12-14 16:00:23,068 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:batchEmbedContents "HTTP/1.1 200 OK"
+2025-12-14 16:00:23,073 - mem0.memory.main - INFO - Total existing memories: 2
+2025-12-14 16:00:23,073 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2025-12-14 16:00:24,513 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent "HTTP/1.1 200 OK"
+2025-12-14 16:00:24,516 - mem0.memory.main - INFO - {'id': '0', 'text': 'Zapytał o pogodę', 'event': 'NONE'}
+2025-12-14 16:00:24,518 - mem0.memory.main - INFO - NOOP for Memory.
+2025-12-14 16:00:24,518 - mem0.memory.main - INFO - {'id': '1', 'text': 'Pozdrowienia dla Batusia', 'event': 'NONE'}
+2025-12-14 16:00:24,519 - mem0.memory.main - INFO - NOOP for Memory.
+2025-12-14 16:00:24,572 - src.emma - INFO - mem0: Memory consolidation result: {'results': []}
+2025-12-14 16:06:05,142 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent "HTTP/1.1 200 OK"
+2025-12-14 16:06:05,527 - src.vectordb - INFO - Vector search performed for query: [SYS_TIME=1765724763.978] [SCENARIO=konferencja_pokazowa] [CAMERA=cam_front] [SESSION=live_1765724746] [GROUP=leader_1765724761237] [SPEECH=1765724758.799-1765724761.237s ~-38.5dBFS] [LEADER_SCORE=None] [VISION LAST=none | WIN=none] USER: Hej, no to się jaka jest dziś pogoda.
+2025-12-14 16:06:05,527 - src.main - INFO - Search Results Found: 3 documents
+2025-12-14 16:06:05,528 - src.main - INFO - Vector search completed successfully
+2025-12-14 16:06:05,528 - src.emma - INFO - mem0: Retrieving memories for user default_user with query: [SYS_TIME=1765724763.978] [SCENARIO=konferencja_pokazowa] [CAMERA=cam_front] [SESSION=live_1765724746] [GROUP=leader_1765724761237] [SPEECH=1765724758.799-1765724761.237s ~-38.5dBFS] [LEADER_SCORE=None] [VISION LAST=none | WIN=none] USER: Hej, no to się jaka jest dziś pogoda.
+Informacje z bazy wektorowej: {"question": "Jaki jest status WAT w strukturze Sił Zbrojnych RP?", "answer": "WAT jest wiodącą uczelnią w Siłach Zbrojnych Rzeczypospolitej Polskiej."}{"question": "Kiedy ukazał się dekret określający pełną nazwę uczelni?", "answer": "Dekret określający pełną nazwę powstającej uczelni – Wojskowa Akademia Techniczna im. Jarosława Dąbrowskiego – ukazał się 18 lipca 1951 roku."}{"question": "Kto był pierwszym komendantem WAT?", "answer": "Pierwszym komendantem uczelni mianowano gen. Floriana Grabczyńskiego."}
+2025-12-14 16:06:06,255 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:batchEmbedContents "HTTP/1.1 200 OK"
+2025-12-14 16:06:06,260 - src.emma - INFO - mem0: Search results: {'results': [{'id': '4bd5a29c-5ebe-4bff-8c4f-1bf5d4d3e9c2', 'memory': 'Zapytał o pogodę', 'hash': '34da92c5a405a1caf0e8644e059290e7', 'metadata': None, 'score': 0.5574452882912846, 'created_at': '2025-12-14T06:47:01.646489-08:00', 'updated_at': None, 'user_id': 'default_user'}, {'id': '35e4a458-728c-4320-b728-62b8c797cf54', 'memory': 'Pozdrowienia dla Batusia', 'hash': '16fa2fecdf0137de599c416872f0a565', 'metadata': None, 'score': 0.506909866331779, 'created_at': '2025-12-14T06:41:20.875538-08:00', 'updated_at': None, 'user_id': 'default_user'}]}
+2025-12-14 16:06:06,261 - src.emma - INFO - mem0: Returning memory context: MEMORY CONTEXT (from previous conversations with this user):
+- Zapytał o pogodę
+- Pozdrowienia dla Batusia
+
+2025-12-14 16:06:07,042 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent "HTTP/1.1 200 OK"
+2025-12-14 16:06:07,047 - src.emma - INFO - mem0: Consolidating memory for user default_user
+2025-12-14 16:06:07,048 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2025-12-14 16:06:08,098 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent "HTTP/1.1 200 OK"
+2025-12-14 16:06:08,405 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:batchEmbedContents "HTTP/1.1 200 OK"
+2025-12-14 16:06:08,764 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:batchEmbedContents "HTTP/1.1 200 OK"
+2025-12-14 16:06:08,769 - mem0.memory.main - INFO - Total existing memories: 2
+2025-12-14 16:06:08,769 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2025-12-14 16:06:09,898 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent "HTTP/1.1 200 OK"
+2025-12-14 16:06:09,902 - mem0.memory.main - INFO - {'id': '0', 'text': 'Zapytał o pogodę', 'event': 'NONE'}
+2025-12-14 16:06:09,902 - mem0.memory.main - INFO - NOOP for Memory.
+2025-12-14 16:06:09,902 - mem0.memory.main - INFO - {'id': '1', 'text': 'Pozdrowienia dla Batusia', 'event': 'NONE'}
+2025-12-14 16:06:09,902 - mem0.memory.main - INFO - NOOP for Memory.
+2025-12-14 16:06:09,957 - src.emma - INFO - mem0: Memory consolidation result: {'results': []}
+2025-12-14 16:32:44,958 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent "HTTP/1.1 200 OK"
+2025-12-14 16:32:44,967 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2025-12-14 16:32:45,921 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent "HTTP/1.1 200 OK"
